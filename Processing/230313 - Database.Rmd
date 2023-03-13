@@ -27,6 +27,87 @@ conflict_prefer("lag", "dplyr")
 options(max.print=999999)
 options(scipen=999)
 ```
+## Mijs
+
+```{r}
+
+#Load database
+mijs = read_dta(here("Input", "data_full_stata.dta"))  %>% 
+  clean_names()
+
+#Select variables
+mijs_final = mijs %>% 
+  select(nomem_encr, survey, country, treatment, 
+         age, sex, race, education, working, politics, pol5, 
+         hhincome, immigrant, marital, religion, ladder_present,
+         ineq_post1, ineq_post2, ineq_post3, ineq_post4,
+         perceived_2_1, perceived_3_1,
+         ineq_pre1, ineq_pre2, ineq_pre3,
+         belief_1:belief_9,
+         ineq_post5, ineq_post6
+         )
+
+#Rename
+mijs_final = mijs_final %>% 
+  rename(ib_weafam = belief_1,
+         ib_edupar = belief_2,
+         ib_edu = belief_3,
+         ib_work = belief_4,
+         ib_people = belief_5,
+         ib_migra = belief_7,
+         ib_race = belief_6, 
+         ib_relig = belief_8,
+         ib_sex = belief_9)
+
+skim(mijs_final)
+
+#Check variables
+mijs_final1 = mijs_final %>% 
+  select(-c(nomem_encr, perceived_2_1, perceived_3_1,))
+
+frq(mijs_final1)
+
+#Filter US
+mijs_us = mijs_final %>% 
+  filter(country==1)
+
+#Databases
+#Complete
+mijs_us
+
+#Inequality beliefs
+mijs_us_ib = mijs_us %>% 
+  select(ib_weafam:ib_sex)
+
+#Save
+save(mijs_us, mijs_us_ib,
+     file = here("Output",  "230313 - Mijs_Databases.RData"))
+
+#Listwise
+# mijs_final1 = mijs_final %>% 
+#   na.omit()
+
+#Variables
+
+#Info
+#nomem_encr, survey, country, treatment
+
+#Controls
+#age, sex, race, education, working, politics, pol5, hhincome, immigrant, marital, religion
+#ladder_present
+
+#Perceptions
+#ineq_post1, ineq_post2, ineq_post3, ineq_post4 
+#perceived_2_1, perceived_3_1
+
+#Beliefs
+#ineq_pre1, ineq_pre2, ineq_pre3
+#belief_1:belief_9
+
+#Attitudes
+#ineq_post5, ineq_post6
+
+```
 
 ## ISSP Social Inequality 2019
 
@@ -39,6 +120,7 @@ issp_2019_original = read_dta(here("Input", "issp_social_inequality_2019", "ZA76
 issp_2019_country = issp_2019_original %>%
     filter(country==840)
 ```
+
 
 # Processing
 
@@ -166,14 +248,7 @@ issp_2019$zone = factor(issp_2019$zone,
 #Race
 #Income
 
-
-```
-
-# Output
-
-## Databases
-
-```{r}
+#Databases
 
 #Complete
 issp_2019_final = issp_2019 %>% 
@@ -188,11 +263,13 @@ issp_2019_ib = issp_2019 %>%
 
 #Save
 save(issp_2019_final, issp_2019_ib,
-     file = here("Output",  "230313 - Databases.RData"))
+     file = here("Output",  "230313 - ISSP_Databases.RData"))
 
 load(here("Output",  "230313 - Databases.RData"))
 
+
 ```
+
 
 
 ## T-test
