@@ -127,179 +127,23 @@ names(ITA_net)
 
 ```
 
-## Networks for NCTs (H2)
-
-### Income
+## T-test
 
 ```{r}
+#loop each V and run t.test
+tests_list <- lapply(seq_along(W3_full), function(i){
+  t.test(W3_full[[i]], W3_full_nolist[[i]])
+})
 
-#Select and listwise
-ITA_income = issp_2019 %>% 
-  select(ib_weafam:pay_merit,
-         it_inc) %>% 
-  rename(income_h = it_inc) %>% 
-  na.omit()
+means = sapply(tests_list, '[[', 'statistic')
+pvalues = as.data.frame(sapply(tests_list, '[[', 'p.value')) 
+cis = sapply(tests_list, '[[', 'conf.int')
 
-#Dummy
-ITA_income = ITA_income %>% 
-  mutate(income_h = ifelse(income_h<=1875, 0, 1)) #2.000 EUR
-
-#Split
-ITA_income = ITA_income %>% 
-  group_split(income_h, .keep = FALSE)
-
-income_0 = ITA_income[[1]]
-income_1 = ITA_income[[2]]
+#print true when the means differ
+pvalues[,2] = names(W3_full)
+pvalues[,3] = with(pvalues,pvalues<0.05)
 ```
 
-
-### Education
-
-```{r}
-
-#Select and listwise
-ITA_educyrs = issp_2019 %>% 
-  select(ib_weafam:pay_merit,
-         educyrs) %>% 
-  na.omit()
-
-#Dummy
-ITA_educyrs = ITA_educyrs %>% 
-    mutate(educyrs = ifelse(educyrs<=12, 0, 1)) #12 years (Incomplete secondary)
-
-#Split
-ITA_educyrs = ITA_educyrs %>% 
-  group_split(educyrs, .keep = FALSE)
-
-edu_0 = ITA_educyrs[[1]]
-edu_1 = ITA_educyrs[[2]]
-```
-
-
-### EGP social class
-
-```{r}
-
-#Select and listwise
-ITA_egpclass = issp_2019 %>% 
-  select(ib_weafam:pay_merit,
-         isco08, emprel, nsup)
-
-#ISCO08 - Code (isco08_code)
-ITA_egpclass = ITA_egpclass %>% 
-  separate(isco08, c("isco08_code", "isco08_label"), remove = FALSE) %>% 
-  mutate(isco08_code = as.numeric(paste0(isco08_code)),
-         isco08_label = ifelse(is.na(isco08_code), NA, isco08_label))
-
-#Self-employed (self_employed)
-ITA_egpclass = ITA_egpclass %>% 
-  mutate(self_employed_ = as.numeric(emprel)) %>% 
-  mutate(self_employed = case_when(self_employed_==3 ~ 0,
-                               self_employed_>=4 & self_employed_<=7 ~ 1,
-                               TRUE ~ NA_real_))
-
-#Number of employees (n_employees)
-ITA_egpclass = ITA_egpclass %>% 
-  mutate(n_employees = ifelse(nsup<0, NA, nsup))
-
-#ISCO08 - ISCO88 - EGP
-ITA_egpclass = ITA_egpclass %>% 
-  mutate(isco88_code = isco08to88(isco08_code, display.nas = FALSE)) %>% 
-  mutate(social_class_3 = isco88toEGP(isco88_code, n.employees=n_employees, self.employed=self_employed, n.classes=3)) 
-
-#Drop IV.c+VII.b  Farm workers 
-ITA_egpclass = ITA_egpclass %>% 
-  filter(social_class_3!="IV.c+VII.b  Farm workers")
-
-
-#Select and listwise
-ITA_egpclass = ITA_egpclass %>% 
-  select(ib_weafam:pay_merit,
-         social_class_3) %>% 
-  na.omit()
-
-#Dummy
-ITA_egpclass_ = ITA_egpclass %>% 
-  mutate(social_class_3 = ifelse(
-                  social_class_3=="V+VI+VI.a Manual workers", 0, 1)) #V+VI+VI.a Manual workers
-
-#Split
-ITA_egpclass = ITA_egpclass_ %>% 
-  group_split(social_class_3, .keep = FALSE)
-
-egpclass_0 = ITA_egpclass[[1]]
-egpclass_1 = ITA_egpclass[[2]]
-
-
-```
-
-### Subjective social class
-
-```{r}
-#Select and listwise
-ITA_subclass = issp_2019 %>% 
-  select(ib_weafam:pay_merit,
-         v61) %>% 
-  rename(subclass = v61) %>% 
-  na.omit()
-
-#Dummy
-ITA_subclass = ITA_subclass %>% 
-  mutate(subclass = ifelse(subclass<=3, 0, 1)) #3. Lower middle class
-
-#Split
-ITA_subclass = ITA_subclass %>% 
-  group_split(subclass, .keep = FALSE)
-
-subclass_0 = ITA_subclass[[1]]
-subclass_1 = ITA_subclass[[2]]
-```
-
-
-### Subjective social mobility
-
-```{r}
-
-#Social mobility
-ITA_socmob  = issp_2019
-ITA_socmob$socmob = ITA_socmob$v42 - ITA_socmob$v41
-
-#Select and listwise
-ITA_socmob = ITA_socmob %>% 
-  select(ib_weafam:pay_merit,
-         socmob) %>% 
-  na.omit()
-
-#Dummy
-ITA_socmob = ITA_socmob %>% 
-  mutate(socmob = ifelse(socmob>=0, 1, 0)) #0
-                 
-#Split
-ITA_socmob = ITA_socmob %>% 
-  group_split(socmob, .keep = FALSE)
-
-socmob_0 = ITA_socmob[[1]]
-socmob_1 = ITA_socmob[[2]]
-```
-
-
-## Network for simulation (H3)
-
-
-
-```{r}
-#Dummies
-ITA_net_can = ITA_net %>%
-  mutate(across(ib_weafam:pay_merit, ~ ntile(., 2))) %>% 
-  mutate(across(ib_weafam:pay_merit, ~ ifelse(.==2, 1, 0)))
-
-#Select variables
-ITA_net_can = ITA_net_can %>% 
-  select(starts_with("ineq_"),
-         starts_with("red_"),
-         starts_with("tax_"))
-
-```
 
 ## Summary
 
