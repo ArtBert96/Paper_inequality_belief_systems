@@ -14,10 +14,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 #Libraries
 library(pacman)
 p_load(tidyverse, janitor, here, haven, labelled, sjmisc, skimr,
-       stargazer, purr, conflicted, biclust)
-
-#devtools::install_github("DiogoFerrari/occupar")
-library(occupar)
+       stargazer, purr, conflicted, biclust, corclass, poLCA)
 
 ```
 
@@ -38,6 +35,85 @@ options(scipen=999)
 issp_2019_original = read_dta(here("Input", "issp_social_inequality_2019", "ZA7600_v3-0-0.dta"))  %>% 
   clean_names()
 
+#Missing values and inverting polarity
+issp_2019 = issp_2019_original %>% 
+  mutate(across(studyno:partials, ~replace(., .<0 , NA)))
+         
+```
+
+```{r}
+#Original variables
+frq(issp_2019, sex, age, marital, partliv, work, mainstat, educyrs, degree, party_lr, urbrural)
+
+#Gender
+issp_2019_original = issp_2019_original %>% 
+  mutate(gender = case_when(sex==1 ~ 0,
+                            sex==2 ~ 1))
+
+issp_2019_original$gender = factor(issp_2019_original$gender, 
+                      levels = c(0:1), 
+                      labels = c("Male",
+                                 "Female"))
+
+#Age
+
+
+#Family status
+issp_2019_original = issp_2019_original %>% 
+  mutate(married = ifelse(marital <= 2, 1, 0))
+
+issp_2019_original$married = factor(issp_2019_original$married, 
+                      levels = c(0:1), 
+                      labels = c("Non married",
+                                 "Married"))
+
+
+#Employment
+issp_2019_original = issp_2019_original %>% 
+  mutate(work_status_ = as.numeric(mainstat)) %>% 
+  mutate(work_status = case_when(work_status_<=2 ~ NA_real_,
+                                 work_status_==5 | work_status_==6 | work_status_==7 | work_status_==8 | 
+                                   work_status_==10 | work_status_==11 ~ 0,
+                                 work_status_==4 ~ 1,
+                                 work_status_==3 | work_status_==9 ~ 2))
+
+issp_2019_original$work_status = factor(issp_2019_original$work_status, 
+                      levels = c(0:2), 
+                      labels = c("Out of workforce",
+                                 "Unemployed",
+                                 "Employed"))
+
+#Education
+issp_2019_original = issp_2019_original %>% 
+  mutate(education_ = as.numeric(degree)) %>% 
+  mutate(education = case_when(education_==1 ~ NA_real_,
+                               education_==2 | education_==3 ~ 0,
+                               education_==4 ~ 1,
+                               education_==5 | education_==6 ~ 2,
+                               education_>=7 ~ 3))
+
+issp_2019_original$education = factor(issp_2019_original$education, 
+                      levels = c(0:3), 
+                      labels = c("Primary",
+                                 "Lower secondary",
+                                 "Upper secondary",
+                                 "Tertiary"))
+
+
+#Zone
+issp_2019_original = issp_2019_original %>% 
+  mutate(zone_ = as.numeric(urbrural)) %>%
+  mutate(zone = case_when(zone_==1 ~ NA_real_,
+                          zone_==2 | zone_==3 | zone_==4 ~ 1,
+                          zone_>=5 ~ 0))
+
+issp_2019_original$zone = factor(issp_2019_original$zone, 
+                      levels = c(0:1), 
+                      labels = c("Rural",
+                                 "Urban"))
+
+#Control variables
+frq(issp_2019_original, gender, age, married, work_status, education, zone)
 ```
 
 # Processing
@@ -47,7 +123,7 @@ issp_2019_original = read_dta(here("Input", "issp_social_inequality_2019", "ZA76
 ```{r}
 #Select
 issp_2019 = issp_2019_original %>% 
-  filter(country==380) %>% 
+  filter(country==840) %>% 
   select(studyno:educyrs, degree:union, isco08, it_inc, caseid:partials)
 
 #Rename
@@ -89,13 +165,7 @@ issp_2019 = issp_2019 %>%
 
 
 ```{r}
-#Missing values and inverting polarity
-issp_2019 = issp_2019 %>% 
-  mutate(across(ib_weafam:pay_merit, ~replace(., .<0 , NA)),
-         across(c(it_inc, educyrs, isco08, emprel, nsup, v61, v41, v42), ~replace(., .<0 , NA)),
-         across(ib_weafam:ib_sex,  ~ 6 - .),
-         across(c(ineq_per, red_pub, red_pri, red_unca, tax_bel),  ~ 6 - .),
-         across(pay_resp:pay_merit,  ~ 6 - .))
+
 
 
 #Reorder
