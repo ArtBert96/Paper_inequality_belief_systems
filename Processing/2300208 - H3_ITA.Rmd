@@ -1,0 +1,406 @@
+---
+title: "221217 - H3"
+output: html_document
+date: "2022-12-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Input
+
+```{r}
+#libraries
+library(pacman)
+p_load(tidyverse, janitor, here, haven, labelled, sjmisc, skimr,
+       stargazer, IsingFit, qgraph, Matrix, igraph, NetworkComparisonTest, bootnet,
+       rio, IsingSampler, compute.es, foreign, mgm, matrixcalc, openxlsx, Rcpp,
+       forestplot, ggplot2, compute.es, jtools)
+```
+
+```{r}
+#Import
+ITA_net_can <- readRDS(here("Input", "ITA_net_can.rds"))
+```
+
+# Processing
+
+## Create objects
+
+```{r}
+shortnames <- c("ineq_per",
+            "ineq_ang", 
+            "ineq_jud",  
+            "red_pub",   
+            "red_pri",   
+            "red_unca",  
+            "red_unsu", 
+            "tax_bel")
+
+longnames <- c(
+  "Perception - perception of inequality",
+  "Judgment - anger towards inequality",
+  "Judgment - unfairness of income distribution",
+  "Belief - preference for public redistribution",
+  "Belief - preference for private redistribution",
+  "Judgment - politicians don't care about redistribution",
+  "Judgment - government unsuccess in redistribution",
+  "Belief - tax progressivity")
+
+completenames <- c(
+  "Perception - perception of inequality (ineq_per)",
+  "Judgment - anger towards inequality (ineq_ang)",
+  "Judgment - unfairness of income distribution (ineq_jud)",
+  "Belief - preference for public redistribution (red_pub )",
+  "Belief - preference for private redistribution (red_pri)",
+  "Judgment - politicians don't care about redistribution (red_unca)",
+  "Judgment - government unsuccess in redistribution (red_unsu)",
+  "Belief - tax progressivity (tax_bel)")
+
+
+```
+
+## H3
+
+```{r}
+#fit
+CANFit <- IsingFit(ITA_net_can)
+
+ITA_net_can = ITA_net_can %>% 
+  select(-tax_per)
+
+```
+
+## ITA_net_can
+
+```{r}
+#fit
+CANFit <- IsingFit(ITA_net_can)
+CANGraph <- qgraph(CANFit $ weiadj, layout = 'spring', cut = .8)
+CANiGraph <- graph_from_adjacency_matrix(abs(CANFit $ weiadj), 'undirected', weighted = TRUE, add.colnames = FALSE)
+
+#communities
+CANCom <- cluster_walktrap(CANiGraph)
+communities(CANCom)
+
+pdf(file = '../Output/H3/communities.pdf', paper = "USr", 
+    height = 9, width = 12) 
+qgraph(CANFit$weiadj, layout = 'spring', cut = .8, groups = communities(CANCom), legend = FALSE)
+dev.off()
+
+
+#graph
+CANcolor <- c("#FBB4AE","#FFFFCC","#CCEBC5")
+
+pdf(file = '../Output/H3/graph1.pdf', paper = "USr", 
+    height = 9, width = 9)
+CANGraph <- qgraph(CANFit$weiadj, layout = 'spring', cut = .8,
+                   labels = shortnames, nodeNames = longnames, 
+                   label.cex=2,
+                   groups = communities(CANCom), color = CANcolor,
+                   borders = FALSE, legend=FALSE,
+                   legend.cex = 0.5, theme = 'Borkulo', legend = TRUE)
+dev.off()
+
+
+#centrality
+centrality(CANGraph)
+centrality_can_graph = centralityPlot(CANGraph, labels = shortnames, 
+                                      orderBy = "Strength") + 
+  geom_vline(xintercept=0, linetype="dotted") +
+  theme_nice() + 
+  theme(axis.text.y=element_text(hjust=1))
+
+ggsave(here("Output", "H3", "centrality.jpg"), centrality_can_graph, height = 5, width = 4)
+
+
+
+
+```
+
+# Output: the simulations
+
+## Connectivity simulation
+
+```{r}
+#Simulation input 
+SimInput <- LinTransform(CANFit$weiadj, CANFit$thresholds)#The LinTransform function rescales the edge weights and thresholds, so that a threshold of 0 indicates that a node has no disposition to be in a given state and a positive (negative) threshold indicates that a node has the disposition to be "on" ("off")
+
+## Connectivity simulation
+
+#simulation samples
+set.seed(1)
+sampleLowTemp <- IsingSampler(1000, SimInput$graph, rep(0,10), 1.5, responses = c(-1L,1L)) 
+sampleMidTemp <- IsingSampler(1000, SimInput$graph, rep(0,10), .8, responses = c(-1L,1L)) 
+sampleHighTemp <- IsingSampler(1000, SimInput$graph, rep(0,10), .4, responses = c(-1L,1L)) 
+
+#transform -1s into 0s
+
+sampleLowTempResc <- sampleLowTemp
+sampleLowTempResc[sampleLowTempResc == -1] <- 0
+
+sampleMidTempResc <- sampleMidTemp
+sampleMidTempResc[sampleMidTempResc == -1] <- 0
+
+sampleHighTempResc <- sampleHighTemp
+sampleHighTempResc[sampleHighTempResc == -1] <- 0
+
+#fit networks on the simulated data
+sampleLowTempFit <- IsingFit(sampleLowTempResc)
+sampleMidTempFit <- IsingFit(sampleMidTempResc)
+sampleHighTempFit <- IsingFit(sampleHighTempResc)
+
+#Graph
+dir.create('../Output/H3')
+pdf('../Output/H3/ConnectivitySim.pdf', 7, 10.5)
+layout(matrix( c(1, 2, 
+                    3, 4,
+                    5, 6), 3, 2, byrow = TRUE))
+
+qgraph(sampleHighTempFit$weiadj, layout = CANGraph$layout, 
+       maximum = max(abs(sampleLowTempFit$weiadj)), 
+       cut = quantile(abs(sampleMidTempFit$weiadj), .75), label.font = 2)
+hist(apply(sampleHighTemp, 1, sum), breaks = seq(-9,9,1), 
+     include.lowest = FALSE, axes = FALSE, 
+     xlab = 'Sum Score', main = '')
+axis(1, seq(-9,9,1), seq(-9,9,1), cex.axis = .9)
+axis(2)
+mtext('High Temperature', line = 2, at = -17, font = 2)
+
+qgraph(sampleMidTempFit$weiadj, layout = CANGraph$layout,
+         maximum = max(abs(sampleLowTempFit$weiadj)), 
+       cut = quantile(abs(sampleMidTempFit$weiadj), .75), label.font = 2)
+hist(apply(sampleMidTemp, 1, sum), breaks = seq(-9,9,1), 
+     include.lowest = FALSE, axes = FALSE, 
+      xlab = 'Sum Score', main = '')
+axis(1, seq(-9,9,1), seq(-9,9,1), cex.axis = .9)
+axis(2)
+mtext('Mid Temperature', line = 2, at = -17, font = 2)
+
+qgraph(sampleLowTempFit$weiadj, layout = CANGraph$layout, 
+       maximum = max(abs(sampleLowTempFit$weiadj)), #the maximum argument makes the different networks comparable as the maximum value is set to the highest edge in the low temperature network
+       cut = quantile(abs(sampleMidTempFit$weiadj), .75), label.font = 2)#the cut argument is used to plot only edges higher than the 75% qunatile of all networks with higher width
+hist(apply(sampleLowTemp, 1, sum), breaks = seq(-9,9,1), 
+     include.lowest = FALSE, axes = FALSE, 
+     xlab = 'Sum Score', main = '')
+axis(1, seq(-9,9,1), seq(-9,9,1), cex.axis = .9)
+axis(2)
+mtext('Low Temperature', line = 2, at = -17, font = 2)
+dev.off()
+```
+
+## Centrality: hard simulation
+
+### Sum scores
+
+```{r}
+#samples with single nodes positive disposition
+set.seed(123)
+SampleNeg <- IsingSampler(3000, SimInput$graph, 
+                          rep(-.1,8),#this argument specifies the thresholds, which are all set to -.1 
+                          responses = c(-1L,1L))
+
+Sampleineq_per <- IsingSampler(3000, SimInput$graph, 
+                          c(rep(-.1,0),#this sets the threshold of the others node to -.1
+                            1,#this sets the thesholds of the fourth node to 1
+                            rep(-.1,7)),
+                            responses = c(-1L,1L))
+
+Sampleineq_ang <- IsingSampler(3000, SimInput$graph, 
+                          c(rep(-.1,1),#this sets the threshold of the others node to -.1
+                            1,#this sets the thesholds of the fourth node to 1
+                            rep(-.1,6)),
+                            responses = c(-1L,1L))
+
+Sampleineq_jud <- IsingSampler(3000, SimInput$graph, 
+                          c(rep(-.1,2),#this sets the threshold of the others node to -.1
+                            1,#this sets the thesholds of the fourth node to 1
+                            rep(-.1,5)),
+                            responses = c(-1L,1L))
+
+Samplered_pub <- IsingSampler(3000, SimInput$graph, 
+                          c(rep(-.1,3),#this sets the threshold of the others node to -.1
+                            1,#this sets the thesholds of the fourth node to 1
+                            rep(-.1,4)),
+                            responses = c(-1L,1L))
+
+Samplered_pri <- IsingSampler(3000, SimInput$graph, 
+                          c(rep(-.1,4),#this sets the threshold of the others node to -.1
+                            1,#this sets the thesholds of the fourth node to 1
+                            rep(-.1,3)),
+                            responses = c(-1L,1L))
+
+Samplered_unca <- IsingSampler(3000, SimInput$graph, 
+                          c(rep(-.1,5),#this sets the threshold of the others node to -.1
+                            1,#this sets the thesholds of the fourth node to 1
+                            rep(-.1,2)),
+                            responses = c(-1L,1L))
+
+Samplered_unsu <- IsingSampler(3000, SimInput$graph, 
+                          c(rep(-.1,6),#this sets the threshold of the others node to -.1
+                            1,#this sets the thesholds of the fourth node to 1
+                            rep(-.1,1)),
+                            responses = c(-1L,1L))
+
+Sampletax_bel <- IsingSampler(3000, SimInput$graph, 
+                          c(rep(-.1,7),#this sets the threshold of the others node to -.1
+                            1,#this sets the thesholds of the fourth node to 1
+                            rep(-.1,0)),
+                            responses = c(-1L,1L))
+
+
+
+allsamples <- rbind(SampleNeg, Sampleineq_per,Sampleineq_ang,Sampleineq_jud,Samplered_pub,
+                    Samplered_pri, Samplered_unca, Samplered_unsu, Sampletax_bel)
+
+
+rowname <- rep(c('Baseline',
+                 'Intervention on ineq_per',
+                 'Intervention on ineq_ang',
+                 'Intervention on ineq_jud',
+                 'Intervention on red_pub',
+                 'Intervention on red_pri',
+                 'Intervention on red_unca',
+                 'Intervention on red_unsu',
+                 'Intervention on tax_bel'), each=3000)
+
+row.names(allsamples) <- rowname
+```
+
+```{r}
+#calculate the sum scores of the different networks
+sumSampleall<-apply(allsamples, 1, sum)  
+sumscores<- data.frame(sumSampleall,rowname)
+head (sumscores)
+
+meansumscores<-aggregate(sumscores$sumSampleall, by=list(sumscores$rowname), mean)
+sdsumscores<-aggregate(sumscores$sumSampleall, by=list(sumscores$rowname), sd)
+
+graphicsumscores<- data.frame(meansumscores,sdsumscores)
+
+#calculate confidence intervals for sumscore means
+m<-graphicsumscores$x
+s<-graphicsumscores$x.1
+u<-m+1.96*s/sqrt(3000)
+l<-m-1.96*s/sqrt(3000)
+
+confi<- cbind(graphicsumscores, m, u, l)
+names<-confi$Group.1
+graph<-data.frame(confi,names)
+
+graph$names <- factor(graph$names, levels = graph$names[order(graph$m)])
+graph$names
+```
+
+```{r}
+#forestplot for the means of sumscores
+mean_SampleNeg = meansumscores %>% 
+  slice(1) %>% 
+  pull(x)
+
+upper_SampleNeg = u[1]
+
+credplot.gg <- function(graph){
+ require(ggplot2)
+ p <- ggplot(graph, aes(x=names, y=m, ymin=l, ymax=u))+
+ geom_pointrange()+
+ geom_hline(yintercept = upper_SampleNeg, linetype="dashed")+
+ geom_hline(yintercept = mean_SampleNeg+2, linetype="dotted")+
+ coord_flip()+
+ xlab('')+
+   ylab('Change in mean sum scores')+
+   theme_nice()+
+      theme(axis.text.y=element_text(hjust=1))
+ return(p)
+}
+
+meansumscores_plot = credplot.gg(graph)
+
+ggsave(here("Output", "H3", "meansumscores_plot.jpg"), meansumscores_plot, height = 4, width = 8)
+
+```
+### T-test of sum scores
+
+```{r}
+#perform t-test on the sum scores of the different networks
+allsamples <- rbind(SampleNeg, Sampleineq_per, Sampleineq_ang, Sampleineq_jud, Samplered_pub,
+                    Samplered_pri, Samplered_unca, Samplered_unsu, Sampletax_bel)
+
+sumSampleNeg <- apply(SampleNeg, 1, sum)
+sumSampleineq_per <- apply(Sampleineq_per, 1, sum)
+sumSampleineq_ang <- apply(Sampleineq_ang, 1, sum)
+sumSampleineq_jud <- apply(Sampleineq_jud, 1, sum)
+sumSamplered_pub  <- apply(Samplered_pub, 1, sum)
+sumSamplered_pri  <- apply(Samplered_pri, 1, sum)
+sumSamplered_unca <- apply(Samplered_unca, 1, sum)
+sumSamplered_unsu <- apply(Samplered_unsu, 1, sum)
+sumSampletax_bel  <- apply(Sampletax_bel, 1, sum)
+
+meansumscores<-aggregate(sumscores$sumSampleall, by=list(sumscores$rowname), mean)
+sdsumscores<-aggregate(sumscores$sumSampleall, by=list(sumscores$rowname), sd)
+
+graphicsumscores<- data.frame(meansumscores,sdsumscores )
+
+t.test(sumscores$sumSampleall, sumscores$sumSampleall, by=list(sumscores$rowname),var.equal = TRUE)
+
+t.test(sumSampleNeg, sumSampleineq_per ,      var.equal = TRUE)#significantly different 
+t.test(sumSampleNeg, sumSampleineq_ang ,      var.equal = TRUE)#Not significantly different
+t.test(sumSampleNeg, sumSampleineq_jud ,      var.equal = TRUE)#Not significantly different
+t.test(sumSampleNeg, sumSamplered_pub  ,      var.equal = TRUE)#significantly different
+t.test(sumSampleNeg, sumSamplered_pri  ,      var.equal = TRUE)#significantly different
+t.test(sumSampleNeg, sumSamplered_unca ,      var.equal = TRUE)#significantly different
+t.test(sumSampleNeg, sumSamplered_unsu ,      var.equal = TRUE)#Not significantly different
+t.test(sumSampleNeg, sumSampletax_bel  ,      var.equal = TRUE)#Not significantly different
+
+```
+
+```{r}
+#calculate the effect size of the difference in the sum scores
+
+mes(mean(sumSampleNeg), mean(sumSampleineq_per ), sd(sumSampleNeg), sd(sumSampleineq_per ), 3000, 3000)
+mes(mean(sumSampleNeg), mean(sumSampleineq_ang ), sd(sumSampleNeg), sd(sumSampleineq_ang ), 3000, 3000)
+mes(mean(sumSampleNeg), mean(sumSampleineq_jud ), sd(sumSampleNeg), sd(sumSampleineq_jud ), 3000, 3000)
+mes(mean(sumSampleNeg), mean(sumSamplered_pub  ), sd(sumSampleNeg), sd(sumSamplered_pub  ), 3000, 3000)
+mes(mean(sumSampleNeg), mean(sumSamplered_pri  ), sd(sumSampleNeg), sd(sumSamplered_pri  ), 3000, 3000)
+mes(mean(sumSampleNeg), mean(sumSamplered_unca ), sd(sumSampleNeg), sd(sumSamplered_unca ), 3000, 3000)
+mes(mean(sumSampleNeg), mean(sumSamplered_unsu ), sd(sumSampleNeg), sd(sumSamplered_unsu ), 3000, 3000)
+mes(mean(sumSampleNeg), mean(sumSampletax_bel  ), sd(sumSampleNeg), sd(sumSampletax_bel  ), 3000, 3000)
+
+```
+
+```{r}
+#preparation for final graph
+
+effectsizes <- 
+  structure(list(
+    names= completenames, 
+    mean  = c(0.90,  1.07,  0.91,  0.73,  1.13,  0.85,  1.08,  1.03),
+    lower = c(0.83,  0.97,  0.83,  0.67,  1.03,  0.78,  0.99,  0.94),
+    upper = c(0.99,  1.17,  1.00,  0.81,  1.24,  0.93,  1.19,  1.13)),
+    .Names = c("names","mean", "lower","upper"), 
+    row.names = c(shortnames), 
+    class = "data.frame")
+
+effectsizes$names <- factor(effectsizes$names, levels = effectsizes$names[order(effectsizes$mean)])
+effectsizes$names
+```
+
+```{r}
+#final graph: I PLOT ODS RATIO EFFECT SIZE, I MIGHT BE WRONG IN DOING THAT
+pdf('../Output/H3/CentralitySim_effects.pdf')
+credplot.gg <- function(effectsizes){
+ require(ggplot2)
+ p <- ggplot(effectsizes, aes(x=names, y=mean, ymin=lower, ymax=upper))+
+ geom_pointrange()+
+ geom_hline(yintercept = 1, linetype=2)+
+ coord_flip()+
+ xlab('')+
+   theme(axis.title.x=element_blank())
+ return(p)
+}
+credplot.gg(effectsizes)
+dev.off()
+```
+
+
