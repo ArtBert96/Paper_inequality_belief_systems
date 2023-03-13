@@ -35,96 +35,20 @@ options(scipen=999)
 issp_2019_original = read_dta(here("Input", "issp_social_inequality_2019", "ZA7600_v3-0-0.dta"))  %>% 
   clean_names()
 
-#Missing values and inverting polarity
-issp_2019 = issp_2019_original %>% 
-  mutate(across(studyno:partials, ~replace(., .<0 , NA)))
-         
-```
-
-```{r}
-#Original variables
-frq(issp_2019, sex, age, marital, partliv, work, mainstat, educyrs, degree, party_lr, urbrural)
-
-#Gender
-issp_2019_original = issp_2019_original %>% 
-  mutate(gender = case_when(sex==1 ~ 0,
-                            sex==2 ~ 1))
-
-issp_2019_original$gender = factor(issp_2019_original$gender, 
-                      levels = c(0:1), 
-                      labels = c("Male",
-                                 "Female"))
-
-#Age
-
-
-#Family status
-issp_2019_original = issp_2019_original %>% 
-  mutate(married = ifelse(marital <= 2, 1, 0))
-
-issp_2019_original$married = factor(issp_2019_original$married, 
-                      levels = c(0:1), 
-                      labels = c("Non married",
-                                 "Married"))
-
-
-#Employment
-issp_2019_original = issp_2019_original %>% 
-  mutate(work_status_ = as.numeric(mainstat)) %>% 
-  mutate(work_status = case_when(work_status_<=2 ~ NA_real_,
-                                 work_status_==5 | work_status_==6 | work_status_==7 | work_status_==8 | 
-                                   work_status_==10 | work_status_==11 ~ 0,
-                                 work_status_==4 ~ 1,
-                                 work_status_==3 | work_status_==9 ~ 2))
-
-issp_2019_original$work_status = factor(issp_2019_original$work_status, 
-                      levels = c(0:2), 
-                      labels = c("Out of workforce",
-                                 "Unemployed",
-                                 "Employed"))
-
-#Education
-issp_2019_original = issp_2019_original %>% 
-  mutate(education_ = as.numeric(degree)) %>% 
-  mutate(education = case_when(education_==1 ~ NA_real_,
-                               education_==2 | education_==3 ~ 0,
-                               education_==4 ~ 1,
-                               education_==5 | education_==6 ~ 2,
-                               education_>=7 ~ 3))
-
-issp_2019_original$education = factor(issp_2019_original$education, 
-                      levels = c(0:3), 
-                      labels = c("Primary",
-                                 "Lower secondary",
-                                 "Upper secondary",
-                                 "Tertiary"))
-
-
-#Zone
-issp_2019_original = issp_2019_original %>% 
-  mutate(zone_ = as.numeric(urbrural)) %>%
-  mutate(zone = case_when(zone_==1 ~ NA_real_,
-                          zone_==2 | zone_==3 | zone_==4 ~ 1,
-                          zone_>=5 ~ 0))
-
-issp_2019_original$zone = factor(issp_2019_original$zone, 
-                      levels = c(0:1), 
-                      labels = c("Rural",
-                                 "Urban"))
-
-#Control variables
-frq(issp_2019_original, gender, age, married, work_status, education, zone)
+#Only USA
+issp_2019_country = issp_2019_original %>%
+    filter(country==840)
 ```
 
 # Processing
 
-## Complete database
+## Main variables
 
 ```{r}
-#Select
-issp_2019 = issp_2019_original %>% 
-  filter(country==840) %>% 
-  select(studyno:educyrs, degree:union, isco08, it_inc, caseid:partials)
+
+#Missing values
+issp_2019 = issp_2019_country %>% 
+  mutate(across(studyno:partials, ~replace(., .<0 , NA)))
 
 #Rename
 issp_2019 = issp_2019 %>% 
@@ -161,41 +85,115 @@ issp_2019 = issp_2019 %>%
          starts_with("pay_"),
          everything())
 
-```
-
-
-```{r}
-
-
-
-#Reorder
+#Missing values and inverting polarity
 issp_2019 = issp_2019 %>% 
-  select(starts_with("ib_"),
-         starts_with("ineq_"),
-         starts_with("red_"),
-         starts_with("tax_"),
-         starts_with("pay_"),
-         everything())
+  mutate(across(ib_weafam:ib_sex,  ~ 6 - .),
+         across(c(ineq_per, red_pub, red_pri, red_unca, tax_bel),  ~ 6 - .),
+         across(pay_resp:pay_merit,  ~ 6 - .))
 
 ```
 
-
-## Attitudes towards inequality database
+## Controls
 
 ```{r}
 
-#Select and listwise
-ITA_net = issp_2019 %>% 
-  select(starts_with("ib_"),
-         starts_with("ineq_"),
-         starts_with("red_"),
-         starts_with("tax_"),
-         starts_with("pay_")) %>% 
-  na.omit()
+#Gender
+issp_2019 = issp_2019 %>% 
+  mutate(gender = case_when(sex==1 ~ 0,
+                            sex==2 ~ 1))
 
-names(ITA_net)
+issp_2019$gender = factor(issp_2019$gender, 
+                      levels = c(0:1), 
+                      labels = c("Male",
+                                 "Female"))
+#Age
+
+
+#Family status
+issp_2019 = issp_2019 %>% 
+  mutate(married = ifelse(marital <= 2, 1, 0))
+
+issp_2019$married = factor(issp_2019$married, 
+                      levels = c(0:1), 
+                      labels = c("Non married",
+                                 "Married"))
+
+#Employment
+issp_2019 = issp_2019 %>% 
+  mutate(work_status = case_when(mainstat==3 | mainstat==4 | mainstat==5 | mainstat==6 | 
+                                 mainstat==8 | mainstat==9 ~ 0,
+                                 mainstat==2 ~ 1,
+                                 mainstat==1 | mainstat==7 ~ 2))
+
+issp_2019$work_status = factor(issp_2019$work_status, 
+                      levels = c(0:2), 
+                      labels = c("Out of workforce",
+                                 "Unemployed",
+                                 "Employed"))
+
+#Education
+issp_2019 = issp_2019 %>% 
+  mutate(education_ = as.numeric(degree)) %>% 
+  mutate(education = case_when(education_==0 | education_==1 ~ 0,
+                               education_==2 ~ 1,
+                               education_==3 | education_==4 ~ 2,
+                               education_>=5 ~ 3))
+
+issp_2019$education = factor(issp_2019$education, 
+                      levels = c(0:3), 
+                      labels = c("Primary",
+                                 "Lower secondary",
+                                 "Upper secondary",
+                                 "Tertiary"))
+
+
+#Zone
+issp_2019 = issp_2019 %>% 
+  mutate(zone_ = as.numeric(urbrural)) %>%
+  mutate(zone = case_when(zone_==1 | zone_==2 ~ 1,
+                          zone_>=3 ~ 0))
+
+issp_2019$zone = factor(issp_2019$zone, 
+                      levels = c(0:1), 
+                      labels = c("Town or rural",
+                                 "Big city"))
+
+#Control variables
+#frq(issp_2019, gender, age, married, work_status, education, zone)
+
+#Pendant
+
+#Race
+#Income
+
 
 ```
+
+# Output
+
+## Databases
+
+```{r}
+
+#Complete
+issp_2019_final = issp_2019 %>% 
+  select(caseid, country, c_alphan,
+         ib_weafam:ib_sex, 
+         ineq_per, red_pub, 
+         gender, age, married, work_status, education, zone)
+
+#Inequality beliefs
+issp_2019_ib = issp_2019 %>% 
+  select(ib_weafam:ib_sex)
+
+#Save
+save(issp_2019_final, issp_2019_ib,
+     file = here("Output",  "230313 - Databases.RData"))
+
+load(here("Output",  "230313 - Databases.RData"))
+
+```
+
 
 ## T-test
 
@@ -229,34 +227,6 @@ stargazer(as.data.frame(ITA_net), type = "text", nobs = TRUE)
 summary_can  = as.data.frame(skim(ITA_net_can))
 stargazer(as.data.frame(ITA_net_can), type = "text", nobs = TRUE)
 
-```
-
-# Output
-
-```{r}
-#ITA_net
-write.csv(ITA_net,"../Input/ITA.csv", row.names = FALSE)
-
-#NCTs
-dir.create("../Input/NCT")
-
-write.csv(income_0,"../Input/NCT/income0.csv", row.names = FALSE)
-write.csv(income_1,"../Input/NCT/income1.csv", row.names = FALSE)
-
-write.csv(edu_0,"../Input/NCT/edu0.csv", row.names = FALSE)
-write.csv(edu_1,"../Input/NCT/edu1.csv", row.names = FALSE)
-
-write.csv(egpclass_0,"../Input/NCT/egpclass0.csv", row.names = FALSE)
-write.csv(egpclass_1,"../Input/NCT/egpclass1.csv", row.names = FALSE)
-
-write.csv(subclass_0,"../Input/NCT/subclass0.csv", row.names = FALSE)
-write.csv(subclass_1,"../Input/NCT/subclass1.csv", row.names = FALSE)
-
-write.csv(socmob_0,"../Input/NCT/socmob0.csv", row.names = FALSE)
-write.csv(socmob_1,"../Input/NCT/socmob1.csv", row.names = FALSE)
-
-#CAN
-saveRDS(ITA_net_can, here("Input", "ITA_net_can.rds"))
 ```
 
 
