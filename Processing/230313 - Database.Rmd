@@ -77,7 +77,9 @@ mijs_us
 
 #Inequality beliefs
 mijs_us_ib = mijs_us %>% 
-  select(ib_weafam:ib_sex)
+  select(ineq_post1:ineq_post4,
+         ineq_pre1:ineq_pre3,
+         ib_weafam:ib_sex)
 
 #Save
 save(mijs_us, mijs_us_ib,
@@ -106,6 +108,8 @@ save(mijs_us, mijs_us_ib,
 
 #Attitudes
 #ineq_post5, ineq_post6
+
+frq(mijs_final, perceived_2_1)
 
 ```
 
