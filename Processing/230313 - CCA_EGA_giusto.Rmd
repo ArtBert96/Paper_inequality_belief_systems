@@ -1,0 +1,263 @@
+---
+title: "221220 - mgm_chile"
+output: html_document
+date: "2022-12-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Input
+
+```{r message=FALSE, warning=FALSE}
+library(pacman)
+p_load(tidyverse, janitor, here, haven, labelled, sjmisc, skimr, ggplot2, jtools,
+       stargazer, IsingFit, qgraph, Matrix, igraph, NetworkComparisonTest, bootnet,
+       rio, IsingSampler, compute.es, foreign, mgm, matrixcalc, openxlsx, RColorBrewer,
+       corclass, poLCA)
+```
+
+```{r}
+load(here("Output",  "230313 - Databases.RData"))
+
+USA=issp_2019_ib %>% 
+  na.omit()
+
+```
+
+## Create objects
+
+```{r}
+shortnames <- c(
+"ib_weafam", "ib_edupar", "ib_edu", "ib_work",   "ib_people", "ib_pol",   
+"ib_bribes", "ib_race",   "ib_relig",  "ib_sex")
+
+longnames <- c(
+  "Inequality belief - wealthy family",
+  "Inequality belief - parental education",
+  "Inequality belief - education",
+  "Inequality belief - hard work",
+  "Inequality belief - knowing the right people",
+  "Inequality belief - having political connections",
+  "Inequality belief - giving bribes",
+  "Inequality belief - race",
+  "Inequality belief - religion",
+  "Inequality belief - sex")
+  
+```
+
+# Processing
+
+## CCA
+
+```{r}
+#CCA applied to ISSP USA
+CCA_group <- cca(USA, filter.significance = TRUE, filter.value = 0.01, 
+                 zero.action = c("ownclass"))  
+
+#extract membership
+membership_CCA = CCA_group$membership
+
+#preliminary plots
+plot(CCA_group, 1)
+plot(CCA_group, 2)
+plot(CCA_group, 4)
+plot(CCA_group, 9)
+plot(CCA_group, 10)
+
+#their cor matrix
+print(round(CCA_group$modules[[1]]$cormat,1))
+print(round(CCA_group$modules[[1]]$cormat,2))
+print(round(CCA_group$modules[[1]]$cormat,4))
+print(round(CCA_group$modules[[1]]$cormat,9))
+print(round(CCA_group$modules[[1]]$cormat,10))
+```
+
+```{r}
+#add membership to USA
+USA_CCA = USA
+USA_CCA$membership = CCA_group$membership
+```
+
+```{r}
+#prepare CCA-driven dataframe for EGA
+CCA_1 = USA_CCA %>% 
+  filter(membership == 1)
+
+CCA_2 = USA_CCA %>% 
+  filter(membership == 2)
+
+CCA_4 = USA_CCA %>% 
+  filter(membership == 4)
+
+CCA_9 = USA_CCA %>% 
+  filter(membership == 9)
+
+CCA_10 = USA_CCA %>% 
+  filter(membership == 10)
+
+```
+
+
+## LCA
+
+```{r}
+f1 <- as.formula(cbind(ib_weafam, ib_edupar, ib_edu, ib_work, ib_people, ib_pol,
+ib_bribes, ib_race, ib_relig, ib_sex)~1)
+
+#lcas
+LCA2 <- poLCA(f1, data=USA, nclass=2)
+LCA3 <- poLCA(f1, data=USA, nclass=3)
+LCA4 <- poLCA(f1, data=USA, nclass=4)
+LCA5 <- poLCA(f1, data=USA, nclass=5)
+LCA6 <- poLCA(f1, data=USA, nclass=6)
+LCA7 <- poLCA(f1, data=USA, nclass=7)
+
+#plot
+plot(LCA2)
+plot(LCA3)
+plot(LCA4)
+plot(LCA5)
+plot(LCA6)
+
+
+##slide13:
+#plot(LCA2)
+##slide14:
+#LCA3 <- poLCA(f1, data=USA, nclass=3)
+#
+##slide15:
+#LCA3 <- poLCA(f1, data=USA, nclass=3, maxiter=3000)
+#LCA3 <- poLCA(f1, data=USA, nclass=3, nrep=5)
+#LCA3 <- poLCA(f1, data=USA, nclass=3, maxiter=3000, nrep=5)
+#
+#LCA4 <- poLCA(f1, data=USA, nclass=4, maxiter=3000, nrep=5)
+#LCA4 <- poLCA(f1, data=USA, nclass=4, maxiter=5000, nrep=5)
+#
+#LCA5 <- poLCA(f1, data=USA, nclass=5, maxiter=5000, nrep=10)
+#
+#LCA2
+#LCA3
+#LCA4
+#LCA5
+#
+##predicted class membership is in:
+#LCA3$predclass[1:30]
+#
+##could be used as another variable (part of the data):
+#USA$LCAf5 <- LCA3$predclass
+```
+
+
+## Bootstrap
+
+#### Edge accuracy
+
+```{r}
+#edge weight accuracy: non parametric bootstrap with 8 cores
+#edgeacc =  bootnet(USA, nBoots = 1000, nCores = 8, 'mgm')
+
+#load the object instead:
+edgeacc = readRDS(here("Input", "edgeacc.rds"))
+
+#plot 1
+pdf('../Output/H1/robustness/edge_accuracy.pdf', height = 70, width = 50)
+plot(edgeacc, labels = longnames, order = "sample")
+dev.off()
+
+#Plot 2
+pdf('../Output/H1/robustness/edge_accuracy_CI.pdf', height = 70, width = 50)
+plot(edgeacc, plot = "interval", split0 = TRUE, order="sample", labels=longnames)
+dev.off()
+
+#summary
+saummary_edgeacc = summary(edgeacc, statistics = c("edge", "strength"), 
+                            perNode = FALSE, rank = FALSE) 
+```
+
+#### Centrality stability
+
+```{r}
+# case dropping bootstrap
+#centstab = bootnet(USA, nBoots = 1000, 'mgm', type = "case", nCores = 8)
+
+#load the object instead:
+centstab = readRDS(here("Input", "centstab.rds"))
+
+#plot 1
+pdf('../Output/H1/robustness/Centrality_stability.pdf', height = 70, width = 50)
+plot(centstab, "Strength", perNode = TRUE, labels = longnames,
+     subsetRange = c(100,50))
+dev.off()
+
+#Plot 2
+pdf('../Output/H1/robustness/Centrality_stability_CI.pdf', height = 70, width = 50)
+plot(centstab, "Strength", CIstyle =  "quantiles")
+dev.off()
+
+#CS-coefficient (result should be above 0.25, better if above 0.5)
+corstab = corStability(centstab)
+```
+
+#### Testing Edge and centrality differences
+
+```{r}
+# Test: difference of weight ties 2-3 vs 4-5
+differenceTest(edgeacc, 2--3, 3--4, "strength")
+
+# Plot test results for every edge weight in the network
+pdf('../Output/H1/robustness/test_edges.pdf', height = 70, width = 50)
+plot(edgeacc, "edge", plot = "difference", onlyNonZero = TRUE, order = "sample", 
+     labels = T)
+dev.off()
+```
+
+```{r}
+# Test: difference of strength of node 2 vs 3 (if the bootstrapped CI include 0, they do not differ)
+differenceTest(edgeacc, 2, 3, "strength")
+
+# Plot test results for every edge weight in the network
+pdf('../Output/H1/robustness/test_strenghts.pdf', height = 70, width = 50)
+plot(edgeacc, "strength", order = "mean", labels = T)
+dev.off()
+```
+
+
+## H1
+
+```{r}
+#small world network
+USA_small_core = smallworldness(mgmFit$pairwise$wadj, B = 1000)
+USA_small_core
+
+```
+comment: 
+- smallworldness > 1 -> small world network
+- rnd values > 1 -> small world network
+- averagelength_target (Unweighted)
+
+
+# Output
+
+## Export heavy objects
+
+```{r}
+#communities
+saveRDS(CommunityStabTotal, here("Input", "CommunityStabTotal.rds"))
+#bootnet
+saveRDS(edgeacc, here("Input","edgeacc.rds"))
+saveRDS(centstab, here("Input", "centstab.rds"))
+```
+
+## Edge weight to excel
+
+```{r}
+##only upper triangle without edge weigths 0 for readability
+EdgeWeight_Total_half<-upper.triangle(inputGraphMGM)
+EdgeWeight_Total_half[EdgeWeight_Total_half == 0] <- NA
+EdgeWeightsExcel_half<- list("mgm" = EdgeWeight_Total_half)
+write.xlsx(EdgeWeightsExcel_half, "../Output/H1/EdgeWeightsExcel_half.xlsx",
+           colWidths = "auto", rowNames = TRUE)
+```
