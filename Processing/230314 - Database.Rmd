@@ -447,4 +447,11 @@ mijs_nl_skim  = mijs_nl %>%
   stargazer(type = "text")
 ```
 
+# Output
+
+```{r}
+save(pvalues_us01,pvalues_us02,pvalues_us03,pvalues_us12,
+      pvalues_us13,pvalues_us23,
+       file = here("Output",  "230314 - pvalues.RData"))
+```
 

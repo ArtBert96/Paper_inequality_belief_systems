@@ -104,7 +104,7 @@ LCA_US_8 <- poLCA(f1, data=US, nclass=8, maxiter=3000, nrep=5)
 
 
 ##plot
-pdf(file = '../Output/7.pdf',
+pdf(file = '../Output/7US.pdf',
     height = 9, width = 12)
  plot(LCA_US_7)
  dev.off()
@@ -272,8 +272,10 @@ LCA_NL_8 <- poLCA(f1, data=NL, nclass=8, maxiter=3000, nrep=5)
 
 
 ##plot
-plot(LCA_NL_6)
-
+pdf(file = '../Output/6NL.pdf',
+    height = 9, width = 12)
+ plot(LCA_NL_6)
+ dev.off()
 
 
 #comment for LCA6
