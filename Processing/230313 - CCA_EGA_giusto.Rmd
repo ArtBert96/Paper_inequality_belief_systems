@@ -56,9 +56,9 @@ CCA_group_US <- cca(US, filter.significance = TRUE, filter.value = 0.01,
                  zero.action = c("ownclass"))  
 
 #preliminary plots
-plot(CCA_group_US, 1)
+US_plot_CCA_1 = plot(CCA_group_US, 1)
 # plot(CCA_group_US, 2)
-plot(CCA_group_US, 3)
+US_plot_CCA_2 = plot(CCA_group_US, 3)
 
 #their cor matrix
 #print(round(CCA_group_US$modules[[1]]$cormat,1))
@@ -224,9 +224,9 @@ CCA_group_NL <- cca(NL, filter.significance = TRUE, filter.value = 0.01,
                  zero.action = c("ownclass"))  
 
 #preliminary plots
-plot(CCA_group_NL, 1)
+NL_plot_CCA_1 = plot(CCA_group_NL, 1)
 # plot(CCA_group_NL, 2)
-plot(CCA_group_NL, 3)
+NL_plot_CCA_2 = plot(CCA_group_NL, 3)
 
 #their cor matrix
 #print(round(CCA_group_NL$modules[[1]]$cormat,1))
@@ -473,8 +473,8 @@ screenreg(list(m1_NL, m2_NL, m3_NL), stars = c(0.01,0.05,0.1))
 # Output
 
 ```{r}
-save(mijs_us, US_ega_CCA1, US_ega_CCA2, LCA_US_7, 
-     mijs_nl, NL_ega_CCA1, NL_ega_CCA2, LCA_NL_6, 
+save(mijs_us, US_ega_CCA1, US_ega_CCA2, LCA_US_7, CCA_group_US,
+     mijs_nl, NL_ega_CCA1, NL_ega_CCA2, LCA_NL_6, CCA_group_NL,
      file = here("Output",  "230314 - Output.RData"))
 
 ```
