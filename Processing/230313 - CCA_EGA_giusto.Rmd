@@ -16,7 +16,7 @@ library(pacman)
 p_load(tidyverse, janitor, here, haven, labelled, sjmisc, skimr, ggplot2, jtools,
        stargazer, IsingFit, qgraph, Matrix, igraph, NetworkComparisonTest, bootnet,
        rio, IsingSampler, compute.es, foreign, mgm, matrixcalc, openxlsx, RColorBrewer,
-       corclass, poLCA, conflicted, EGAnet)
+       corclass, poLCA, conflicted, EGAnet, texreg)
 ```
 
 ```{r}
@@ -52,24 +52,24 @@ NL=mijs_nl_ib
 
 ```{r}
 #CCA applied to ISSP US
-CCA_group <- cca(US, filter.significance = TRUE, filter.value = 0.01, 
+CCA_group_US <- cca(US, filter.significance = TRUE, filter.value = 0.01, 
                  zero.action = c("ownclass"))  
 
 #preliminary plots
-plot(CCA_group, 1)
-# plot(CCA_group, 2)
-plot(CCA_group, 3)
+plot(CCA_group_US, 1)
+# plot(CCA_group_US, 2)
+plot(CCA_group_US, 3)
 
 #their cor matrix
-#print(round(CCA_group$modules[[1]]$cormat,1))
-#print(round(CCA_group$modules[[1]]$cormat,2))
-#print(round(CCA_group$modules[[1]]$cormat,3))
+#print(round(CCA_group_US$modules[[1]]$cormat,1))
+#print(round(CCA_group_US$modules[[1]]$cormat,2))
+#print(round(CCA_group_US$modules[[1]]$cormat,3))
 ```
 
 ```{r}
 #add membership to US
 US_CCA = US
-US_CCA$mem = CCA_group$membership
+US_CCA$mem = CCA_group_US$membership
 
 #prepare CCA-driven dataframe for EGA
 CCA_US_1 = US_CCA %>% 
@@ -124,6 +124,8 @@ pdf(file = '../Output/7.pdf',
 ```{r}
 #add predclass to US and merge
 US_CCA$pred = LCA_US_7$predclass
+mijs_us$mem = CCA_group_US$membership
+mijs_us$pred = LCA_US_7$predclass
 
 #filter out second CCA class
 US_CCA = US_CCA %>% 
@@ -205,8 +207,8 @@ ega_LCA_US_5 <- EGA(data=US_LCA5_EGA,  model = "TMFG", # da problemi
 ega_LCA_US_6 <- EGA(data=US_LCA6_EGA,  model = "TMFG", 
                   plot.EGA = TRUE) 
 
-ega_LCA_US_7 <- EGA(data=US_LCA7_EGA,  model = "TMFG", 
-                  plot.EGA = TRUE) 
+#ega_LCA_US_7 <- EGA(data=US_LCA7_EGA,  model = "TMFG", 
+#                  plot.EGA = TRUE) 
 
 skim(US_LCA7_EGA)
 ```
@@ -218,24 +220,24 @@ skim(US_LCA7_EGA)
 
 ```{r}
 #CCA applied to ISSP NL
-CCA_group <- cca(NL, filter.significance = TRUE, filter.value = 0.01, 
+CCA_group_NL <- cca(NL, filter.significance = TRUE, filter.value = 0.01, 
                  zero.action = c("ownclass"))  
 
 #preliminary plots
-plot(CCA_group, 1)
-# plot(CCA_group, 2)
-plot(CCA_group, 3)
+plot(CCA_group_NL, 1)
+# plot(CCA_group_NL, 2)
+plot(CCA_group_NL, 3)
 
 #their cor matrix
-#print(round(CCA_group$modules[[1]]$cormat,1))
-#print(round(CCA_group$modules[[1]]$cormat,2))
-#print(round(CCA_group$modules[[1]]$cormat,3))
+#print(round(CCA_group_NL$modules[[1]]$cormat,1))
+#print(round(CCA_group_NL$modules[[1]]$cormat,2))
+#print(round(CCA_group_NL$modules[[1]]$cormat,3))
 ```
 
 ```{r}
 #add membership to NL
 NL_CCA = NL
-NL_CCA$mem = CCA_group$membership
+NL_CCA$mem = CCA_group_NL$membership
 
 #prepare CCA-driven dataframe for EGA
 CCA_NL_1 = NL_CCA %>% 
@@ -287,6 +289,8 @@ plot(LCA_NL_6)
 ```{r}
 #add predclass to NL and merge
 NL_CCA$pred = LCA_NL_6$predclass
+mijs_nl$mem = CCA_group_NL$membership
+mijs_nl$pred = LCA_NL_6$predclass
 
 #filter out second CCA class
 NL_CCA = NL_CCA %>% 
@@ -366,3 +370,103 @@ ega_LCA_NL_6 <- EGA(data=NL_LCA6_EGA,  model = "TMFG",
                   plot.EGA = TRUE) 
 
 ```
+
+## Cross tab and reg
+
+### US
+
+```{r}
+mijs_us = mijs_us %>% 
+  rename( CCA = mem, 
+          LCA = pred) %>% 
+   filter(CCA != 2)
+
+#cross tab
+mijs_us %>%
+  select(CCA, att_redist) %>%
+  flat_table(margin = "row", digits = 1)
+
+#graph
+mijs_us_n = nrow(mijs_us)
+
+crosstab_US = mijs_us %>%
+  group_by(CCA) %>% 
+  mutate(n_cca = n()) %>%
+  group_by(CCA, att_redist) %>% 
+  summarise(count = n(),
+           pct = count / n_cca) %>% 
+  slice(1) %>% 
+  ggplot(aes(y=pct, x=att_redist)) +
+  geom_col() +
+  facet_wrap(~CCA) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = 1:7) +
+  labs(x="Attitude towards redistribution", y="Percentage")
+ggsave(filename = here("Output", "graph_tab_US.jpg"), plot =  crosstab_US)
+
+
+#regression
+mijs_us = mijs_us %>% 
+  mutate(CCA = as.factor(paste0(CCA)),
+         hhincome = as.factor(paste0(hhincome)))
+
+m1_US = lm(att_redist ~ CCA, data = mijs_us)
+m2_US = lm(att_redist ~ CCA + age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_us)
+m3_US = lm(att_redist ~ age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_us)
+
+
+#xtable
+screenreg(list(m1_US, m2_US, m3_US), stars = c(0.01,0.05,0.1))
+```
+
+
+### NL
+
+```{r}
+mijs_nl = mijs_nl %>% 
+  rename( CCA = mem, 
+          LCA = pred) %>% 
+   filter(CCA != 2)
+
+#cross tab
+mijs_nl %>%
+  select(CCA, att_redist) %>%
+  flat_table(margin = "row", digits = 1)
+
+#graph
+mijs_nl_n = nrow(mijs_nl)
+
+crosstab_NL = mijs_nl %>%
+  group_by(CCA) %>% 
+  mutate(n_cca = n()) %>%
+  group_by(CCA, att_redist) %>% 
+  summarise(count = n(),
+           pct = count / n_cca) %>% 
+  slice(1) %>% 
+  ggplot(aes(y=pct, x=att_redist)) +
+  geom_col() +
+  facet_wrap(~CCA) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = 1:7) +
+  labs(x="Attitude towards redistribution", y="Percentage")
+ggsave(filename = here("Output", "graph_tab_NL.jpg"), plot =  crosstab_NL)
+
+
+#regression
+mijs_nl = mijs_nl %>% 
+  mutate(CCA = as.factor(paste0(CCA)),
+         hhincome = as.factor(paste0(hhincome)))
+
+m1_NL = lm(att_redist ~ CCA, data = mijs_nl)
+m2_NL = lm(att_redist ~ CCA + age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_nl)
+m3_NL = lm(att_redist ~ age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_nl)
+
+
+#xtable
+screenreg(list(m1_NL, m2_NL, m3_NL), stars = c(0.01,0.05,0.1))
+```
+
