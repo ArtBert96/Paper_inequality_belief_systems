@@ -31,228 +31,338 @@ options(scipen=999)
 
 
 ```{r}
-#data
-load(here("Output",  "230313 - Mijs_Databases.RData"))
+#data US
+load(here("Output",  "230313 - Mijs_US_Databases.RData"))
 
-USA=mijs_us_ib %>% 
-  na.omit()
+US=mijs_us_ib 
 
-#freq total
-frq(USA)
+#data NL
+load(here("Output",  "230313 - Mijs_NL_Databases.RData"))
+
+NL=mijs_nl_ib 
+
 ```
 
-## T-test(s)
-
-```{r}
-#loop each V and run t.test
-tests_list <- lapply(seq_along(W3_full), function(i){
-  t.test(W3_full[[i]], W3_full_nolist[[i]])
-})
-
-means = sapply(tests_list, '[[', 'statistic')
-pvalues = as.data.frame(sapply(tests_list, '[[', 'p.value')) 
-cis = sapply(tests_list, '[[', 'conf.int')
-
-#print true when the means differ
-pvalues[,2] = names(W3_full)
-pvalues[,3] = with(pvalues,pvalues<0.05)
-```
-
-
-## Create objects
-
-```{r}
-shortnames <- c(
-"ib_weafam", "ib_edupar", "ib_edu", "ib_work",   "ib_people", "ib_pol",   
-"ib_bribes", "ib_race",   "ib_relig",  "ib_sex")
-
-longnames <- c(
-  "Inequality belief - wealthy family",
-  "Inequality belief - parental education",
-  "Inequality belief - education",
-  "Inequality belief - hard work",
-  "Inequality belief - knowing the right people",
-  "Inequality belief - having political connections",
-  "Inequality belief - giving bribes",
-  "Inequality belief - race",
-  "Inequality belief - religion",
-  "Inequality belief - sex")
-  
-```
 
 # Processing
 
-## CCA
-
-```{r}
-#CCA applied to ISSP USA
-CCA_group <- cca(USA, filter.significance = TRUE, filter.value = 0.01, 
-                 zero.action = c("ownclass"))  
-
-#extract membership
-membership_CCA = CCA_group$membership
-
-#preliminary plots
-plot(CCA_group, 1)
-plot(CCA_group, 3)
-
-#their cor matrix
-print(round(CCA_group$modules[[1]]$cormat,1))
-print(round(CCA_group$modules[[1]]$cormat,3))
-```
-
-```{r}
-#add membership to USA
-USA_CCA = USA
-USA_CCA$mem = CCA_group$membership
-
-names(USA_CCA)
-```
-
-```{r}
-#prepare CCA-driven dataframe for EGA
-CCA_1 = USA_CCA %>% 
-  as.data.frame() %>% 
-  filter(mem == 1) %>%
-  select(ineq_post1:ib_sex)
-
-
-CCA_2 = USA_CCA %>% 
-  as.data.frame() %>% 
-  filter(mem == 3) %>%
-  select(ineq_post1:ib_sex)
-
-```
-
-
-## LCA
-
-```{r}
-f1 <- as.formula(cbind(ineq_post1, ineq_post2, ineq_post3, ineq_post4, ineq_pre1,
-                       ineq_pre2,ineq_pre3,ib_weafam,ib_edupar,ib_edu,ib_work,ib_people,
-                       ib_race,ib_migra,ib_relig,ib_sex)~1)
-
-#lcas
-LCA2 <- poLCA(f1, data=USA, nclass=2, maxiter=3000, nrep=5)
-LCA3 <- poLCA(f1, data=USA, nclass=3, maxiter=3000, nrep=5)
-LCA4 <- poLCA(f1, data=USA, nclass=4, maxiter=3000, nrep=5)
-LCA5 <- poLCA(f1, data=USA, nclass=5, maxiter=3000, nrep=5)
-LCA6 <- poLCA(f1, data=USA, nclass=6, maxiter=3000, nrep=5)
-LCA7 <- poLCA(f1, data=USA, nclass=7, maxiter=3000, nrep=5) #the chosen one
-LCA8 <- poLCA(f1, data=USA, nclass=8, maxiter=3000, nrep=5)
-
-LCA2_a <- poLCA(f1, data=USA, nclass=2)
-LCA3_a <- poLCA(f1, data=USA, nclass=3)
-LCA4_a <- poLCA(f1, data=USA, nclass=4)
-LCA5_a <- poLCA(f1, data=USA, nclass=5)
-LCA6_a <- poLCA(f1, data=USA, nclass=6) #the chosen one, without iteration
-LCA7_a <- poLCA(f1, data=USA, nclass=7)
-LCA8_a <- poLCA(f1, data=USA, nclass=8)
-
-#plo
-plot(LCA6)
-plot(LCA6_a)
-
-##adjust plot margins
-#pdf(file = '../Output/7.pdf',paper = "USr",
-#    height = 9, width = 12)
-#bo = plot(LCA7)
-#dev.off()
-
-
-#comment for LCA6
-#1: low perception mid-high individualist and mid high structuralist
-#2: low perception high individualist low structuralist
-#3: high perception high individualist low structuralist
-#4: high perception mid-high individualist and mid high structuralist
-#5: super high perception of ineq, super high individualist
-#6: high everything
-
-##predicted class membership is in:
-LCA6$predclass
-
-```
-
-```{r}
-#add predclass to USA and merge
-USA_CCA$pred = LCA6$predclass
-
-#filter out second CCA class
-USA_CCA = USA_CCA %>% 
-  filter(mem != 2)
-
-names(USA_CCA)
-```
-
-
-## EGA
+## US
 
 ### CCA
 
 ```{r}
-#filter useless v
-USA_CCA1_EGA = USA_CCA %>% 
-  filter(mem == 1) %>%
-  select(ineq_post1:ib_sex)
+#CCA applied to ISSP US
+CCA_group <- cca(US, filter.significance = TRUE, filter.value = 0.01, 
+                 zero.action = c("ownclass"))  
 
-USA_CCA2_EGA = USA_CCA %>% 
-  filter(mem == 3) %>%
-  select(ineq_post1:ib_sex)
+#preliminary plots
+plot(CCA_group, 1)
+# plot(CCA_group, 2)
+plot(CCA_group, 3)
 
-ega_CCA1 <- EGA(data=USA_CCA1_EGA,  model = "glasso", 
-                  plot.EGA = TRUE) 
-
-ega_CCA2 <- EGA(data=USA_CCA2_EGA,  model = "glasso", 
-                  plot.EGA = TRUE) 
+#their cor matrix
+#print(round(CCA_group$modules[[1]]$cormat,1))
+#print(round(CCA_group$modules[[1]]$cormat,2))
+#print(round(CCA_group$modules[[1]]$cormat,3))
 ```
+
+```{r}
+#add membership to US
+US_CCA = US
+US_CCA$mem = CCA_group$membership
+
+#prepare CCA-driven dataframe for EGA
+CCA_US_1 = US_CCA %>% 
+  as.data.frame() %>% 
+  filter(mem == 1) %>%
+  select(perc_income:ib_sex)
+
+CCA_US_2 = US_CCA %>% 
+  as.data.frame() %>% 
+  filter(mem == 3) %>%
+  select(perc_income:ib_sex)
+
+```
+
 
 ### LCA
 
 ```{r}
+f1 <- as.formula(cbind(perc_income,perc_wealth,perc_poor,perc_black,
+                       bel_merit,bel_diversity,bel_equality,ib_weafam,ib_edupar,
+                       ib_edu,ib_work,ib_people,ib_race,ib_migra,ib_relig,ib_sex)~1)
+
+#lcas
+LCA_US_2 <- poLCA(f1, data=US, nclass=2, maxiter=3000, nrep=5)
+LCA_US_3 <- poLCA(f1, data=US, nclass=3, maxiter=3000, nrep=5)
+LCA_US_4 <- poLCA(f1, data=US, nclass=4, maxiter=3000, nrep=5)
+LCA_US_5 <- poLCA(f1, data=US, nclass=5, maxiter=3000, nrep=5)
+LCA_US_6 <- poLCA(f1, data=US, nclass=6, maxiter=3000, nrep=5)
+set.seed(123)
+LCA_US_7 <- poLCA(f1, data=US, nclass=7, maxiter=3000, nrep=5) #the chosen one
+LCA_US_8 <- poLCA(f1, data=US, nclass=8, maxiter=3000, nrep=5)
+
+
+##plot
+pdf(file = '../Output/7.pdf',
+    height = 9, width = 12)
+ plot(LCA_US_7)
+ dev.off()
+
+
+#comment for LCA6
+#1: low perception mid-high individualist and low structuralist
+#2: mid high perception high individualist low structuralist
+#3: high perception mid high individualist mid low structuralist
+#4: mid high perception mid-high individualist and mid low structuralist
+#5: super high perception, mid high individualist and mid structuralist
+#6: mid high everything
+#7: super high evrything
+
+```
+
+```{r}
+#add predclass to US and merge
+US_CCA$pred = LCA_US_7$predclass
+
+#filter out second CCA class
+US_CCA = US_CCA %>% 
+  filter(mem != 2)
+```
+
+
+### EGA
+
+#### CCA
+
+```{r}
 #filter useless v
-USA_LCA1_EGA = USA_CCA %>% 
-  filter(pred == 1) %>%
-  select(ineq_post1:ib_sex)
+US_CCA1_EGA = US_CCA %>% 
+  filter(mem == 1) %>%
+  select(perc_income:ib_sex)
 
-USA_LCA2_EGA = USA_CCA %>% 
-  filter(pred == 2) %>%
-  select(ineq_post1:ib_sex)
+US_CCA2_EGA = US_CCA %>% 
+  filter(mem == 3) %>%
+  select(perc_income:ib_sex)
 
-USA_LCA3_EGA = USA_CCA %>% 
-  filter(pred == 3) %>%
-  select(ineq_post1:ib_sex)
-
-USA_LCA4_EGA = USA_CCA %>% 
-  filter(pred == 4) %>%
-  select(ineq_post1:ib_sex)
-
-USA_LCA5_EGA = USA_CCA %>% 
-  filter(pred == 5) %>%
-  select(ineq_post1:ib_sex)
-
-USA_LCA6_EGA = USA_CCA %>% 
-  filter(pred == 6) %>%
-  select(ineq_post1:ib_sex)
-
-
-
-ega_LCA1 <- EGA(data=USA_LCA1_EGA,  model = "glasso", 
+ega_CCA1 <- EGA(data=US_CCA1_EGA,  model = "TMFG", 
                   plot.EGA = TRUE) 
 
-ega_LCA2 <- EGA(data=USA_LCA2_EGA,  model = "glasso", 
-                  plot.EGA = TRUE) 
-
-ega_LCA3 <- EGA(data=USA_LCA3_EGA,  model = "glasso", 
-                  plot.EGA = TRUE) 
-
-ega_LCA4 <- EGA(data=USA_LCA4_EGA,  model = "glasso", 
-                  plot.EGA = TRUE) 
-
-ega_LCA5 <- EGA(data=USA_LCA5_EGA,  model = "glasso", 
-                  plot.EGA = TRUE) 
-
-ega_LCA6 <- EGA(data=USA_LCA6_EGA,  model = "glasso", 
+ega_CCA2 <- EGA(data=US_CCA2_EGA,  model = "TMFG", 
                   plot.EGA = TRUE) 
 
 ```
 
+#### LCA
+
+```{r}
+#filter useless v
+US_LCA1_EGA = US_CCA %>% 
+  filter(pred == 1) %>%
+  select(perc_income:ib_sex)
+
+US_LCA2_EGA = US_CCA %>% 
+  filter(pred == 2) %>%
+  select(perc_income:ib_sex)
+
+US_LCA3_EGA = US_CCA %>% 
+  filter(pred == 3) %>%
+  select(perc_income:ib_sex)
+
+US_LCA4_EGA = US_CCA %>% 
+  filter(pred == 4) %>%
+  select(perc_income:ib_sex)
+
+US_LCA5_EGA = US_CCA %>% 
+  filter(pred == 5) %>%
+  select(perc_income:ib_sex)
+
+US_LCA6_EGA = US_CCA %>% 
+  filter(pred == 6) %>%
+  select(perc_income:ib_sex)
+
+US_LCA7_EGA = US_CCA %>% 
+  filter(pred == 7) %>%
+  select(perc_income:ib_sex)
+
+
+
+ega_LCA_US_1 <- EGA(data=US_LCA1_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+ega_LCA_US_2 <- EGA(data=US_LCA2_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+ega_LCA_US_3 <- EGA(data=US_LCA3_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+ega_LCA_US_4 <- EGA(data=US_LCA4_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+ega_LCA_US_5 <- EGA(data=US_LCA5_EGA,  model = "TMFG", # da problemi
+                  plot.EGA = TRUE) 
+
+ega_LCA_US_6 <- EGA(data=US_LCA6_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+ega_LCA_US_7 <- EGA(data=US_LCA7_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+skim(US_LCA7_EGA)
+```
+
+
+## NL
+
+### CCA
+
+```{r}
+#CCA applied to ISSP NL
+CCA_group <- cca(NL, filter.significance = TRUE, filter.value = 0.01, 
+                 zero.action = c("ownclass"))  
+
+#preliminary plots
+plot(CCA_group, 1)
+# plot(CCA_group, 2)
+plot(CCA_group, 3)
+
+#their cor matrix
+#print(round(CCA_group$modules[[1]]$cormat,1))
+#print(round(CCA_group$modules[[1]]$cormat,2))
+#print(round(CCA_group$modules[[1]]$cormat,3))
+```
+
+```{r}
+#add membership to NL
+NL_CCA = NL
+NL_CCA$mem = CCA_group$membership
+
+#prepare CCA-driven dataframe for EGA
+CCA_NL_1 = NL_CCA %>% 
+  as.data.frame() %>% 
+  filter(mem == 1) %>%
+  select(perc_income:ib_sex)
+
+CCA_NL_2 = NL_CCA %>% 
+  as.data.frame() %>% 
+  filter(mem == 3) %>%
+  select(perc_income:ib_sex)
+
+```
+
+
+### LCA
+
+```{r}
+f1 <- as.formula(cbind(perc_income,perc_wealth,perc_poor,perc_black,
+                       bel_merit,bel_diversity,bel_equality,ib_weafam,ib_edupar,
+                       ib_edu,ib_work,ib_people,ib_race,ib_migra,ib_relig,ib_sex)~1)
+
+#lcas
+LCA_NL_2 <- poLCA(f1, data=NL, nclass=2, maxiter=3000, nrep=5)
+LCA_NL_3 <- poLCA(f1, data=NL, nclass=3, maxiter=3000, nrep=5)
+LCA_NL_4 <- poLCA(f1, data=NL, nclass=4, maxiter=3000, nrep=5)
+LCA_NL_5 <- poLCA(f1, data=NL, nclass=5, maxiter=3000, nrep=5)
+set.seed(123)
+LCA_NL_6 <- poLCA(f1, data=NL, nclass=6, maxiter=3000, nrep=5) #the chosen one
+LCA_NL_7 <- poLCA(f1, data=NL, nclass=7, maxiter=3000, nrep=5) 
+LCA_NL_8 <- poLCA(f1, data=NL, nclass=8, maxiter=3000, nrep=5)
+
+
+##plot
+plot(LCA_NL_6)
+
+
+
+#comment for LCA6
+#1: 
+#2: 
+#3: 
+#4: 
+#5: 
+#6: 
+#7: 
+```
+
+```{r}
+#add predclass to NL and merge
+NL_CCA$pred = LCA_NL_6$predclass
+
+#filter out second CCA class
+NL_CCA = NL_CCA %>% 
+  filter(mem != 2)
+```
+
+
+### EGA
+
+#### CCA
+
+```{r}
+#filter useless v
+NL_CCA1_EGA = NL_CCA %>% 
+  filter(mem == 1) %>%
+  select(perc_income:ib_sex)
+
+NL_CCA2_EGA = NL_CCA %>% 
+  filter(mem == 3) %>%
+  select(perc_income:ib_sex)
+
+ega_CCA1 <- EGA(data=NL_CCA1_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+ega_CCA2 <- EGA(data=NL_CCA2_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+```
+
+#### LCA
+
+```{r}
+#filter useless v
+NL_LCA1_EGA = NL_CCA %>% 
+  filter(pred == 1) %>%
+  select(perc_income:ib_sex)
+
+NL_LCA2_EGA = NL_CCA %>% 
+  filter(pred == 2) %>%
+  select(perc_income:ib_sex)
+
+NL_LCA3_EGA = NL_CCA %>% 
+  filter(pred == 3) %>%
+  select(perc_income:ib_sex)
+
+NL_LCA4_EGA = NL_CCA %>% 
+  filter(pred == 4) %>%
+  select(perc_income:ib_sex)
+
+NL_LCA5_EGA = NL_CCA %>% 
+  filter(pred == 5) %>%
+  select(perc_income:ib_sex)
+
+NL_LCA6_EGA = NL_CCA %>% 
+  filter(pred == 6) %>%
+  select(perc_income:ib_sex)
+
+
+
+
+ega_LCA_NL_1 <- EGA(data=NL_LCA1_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+ega_LCA_NL_2 <- EGA(data=NL_LCA2_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+ega_LCA_NL_3 <- EGA(data=NL_LCA3_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+ega_LCA_NL_4 <- EGA(data=NL_LCA4_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+ega_LCA_NL_5 <- EGA(data=NL_LCA5_EGA,  model = "TMFG", # da problemi
+                  plot.EGA = TRUE) 
+
+ega_LCA_NL_6 <- EGA(data=NL_LCA6_EGA,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+```

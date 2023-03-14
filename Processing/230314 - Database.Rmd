@@ -25,7 +25,7 @@ conflict_prefer("filter", "dplyr")
 conflict_prefer("lag", "dplyr")
 
 options(max.print=999999)
-options(scipen=999)
+options(scipen=999999)
 ```
 # Processing
 
@@ -40,16 +40,12 @@ mijs_final = mijs %>%
          age, sex, race, education, working, politics, pol5, 
          hhincome, immigrant, marital, religion, ladder_present,
          ineq_post1, ineq_post2, ineq_post3, ineq_post4,
-         perceived_2_1, perceived_3_1,
          ineq_pre1, ineq_pre2, ineq_pre3,
          belief_1:belief_9,
          ineq_post5, ineq_post6
          )
 
-#Rename
 mijs_final = mijs_final %>%
-  filter(perceived_2_1>0 & perceived_3_1>0) %>% 
-  mutate(perc_pay_gap = log(perceived_2_1/perceived_3_1)) %>%
   rename(ib_weafam = belief_1,
          ib_edupar = belief_2,
          ib_edu = belief_3,
@@ -78,11 +74,12 @@ mijs_final = mijs_final %>%
          starts_with("att_"))
 
 
+
 #Check variables
 mijs_final1 = mijs_final %>% 
   select(-c(nomem_encr))
 
-frq(mijs_final, treatment)
+frq(mijs_final$perc_pay_gap)
 ```
 
 
@@ -93,11 +90,13 @@ frq(mijs_final, treatment)
 ```{r}
 #Filter US
 mijs_us = mijs_final %>% 
-  filter(country==1)
+  filter(country==1) %>% 
+  na.omit()
 
 #Filter NL
 mijs_nl = mijs_final %>% 
-  filter(country==2)
+  filter(country==2) %>% 
+  na.omit()
 
 #Databases
 
@@ -108,7 +107,7 @@ mijs_us
 
 #Inequality beliefs
 mijs_us_ib = mijs_us %>% 
-  select(ib_weafam:bel_equality)
+  select(perc_income:ib_sex)
 
 #Save
 save(mijs_us, mijs_us_ib,
@@ -122,7 +121,7 @@ mijs_nl
 
 #Inequality beliefs
 mijs_nl_ib = mijs_nl %>% 
-  select(ib_weafam:bel_equality)
+  select(perc_income:ib_sex)
 
 
 #Save
