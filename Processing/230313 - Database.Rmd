@@ -48,7 +48,9 @@ mijs_final = mijs %>%
          )
 
 #Rename
-mijs_final = mijs_final %>% 
+mijs_final = mijs_final %>%
+  filter(perceived_2_1>0 & perceived_3_1>0) %>% 
+  mutate(perc_pay_gap = log(perceived_2_1/perceived_3_1)) %>%
   rename(ib_weafam = belief_1,
          ib_edupar = belief_2,
          ib_edu = belief_3,
@@ -57,13 +59,29 @@ mijs_final = mijs_final %>%
          ib_migra = belief_7,
          ib_race = belief_6, 
          ib_relig = belief_8,
-         ib_sex = belief_9)
+         ib_sex = belief_9,
+         perc_income = ineq_post1, 
+         perc_wealth = ineq_post2, 
+         perc_poor = ineq_post3, 
+         perc_black = ineq_post4,
+         bel_merit = ineq_pre1, 
+         bel_diversity = ineq_pre2, 
+         bel_equality = ineq_pre3,
+         att_redist = ineq_post5, 
+         att_discrim = ineq_post6) %>% 
+  select(nomem_encr, survey, country, treatment, 
+         age, sex, race, education, working, politics, pol5, 
+         hhincome, immigrant, marital, religion, ladder_present,
+         #perceived_2_1, perceived_3_1,
+         starts_with("perc_"),
+         starts_with("bel_"),
+         starts_with("ib_"),
+         starts_with("att_"))
 
-skim(mijs_final)
 
 #Check variables
 mijs_final1 = mijs_final %>% 
-  select(-c(nomem_encr, perceived_2_1, perceived_3_1,))
+  select(-c(nomem_encr))
 
 frq(mijs_final1)
 
@@ -71,19 +89,39 @@ frq(mijs_final1)
 mijs_us = mijs_final %>% 
   filter(country==1)
 
+#Filter NL
+mijs_nl = mijs_final %>% 
+  filter(country==2)
+
 #Databases
+
+#US
+
 #Complete
 mijs_us
 
 #Inequality beliefs
 mijs_us_ib = mijs_us %>% 
-  select(ineq_post1:ineq_post4,
-         ineq_pre1:ineq_pre3,
-         ib_weafam:ib_sex)
+  select(ib_weafam:bel_equality)
 
 #Save
 save(mijs_us, mijs_us_ib,
-     file = here("Output",  "230313 - Mijs_Databases.RData"))
+     file = here("Output",  "230313 - Mijs_US_Databases.RData"))
+
+
+#NL
+
+#Complete
+mijs_nl
+
+#Inequality beliefs
+mijs_nl_ib = mijs_nl %>% 
+  select(ib_weafam:bel_equality)
+
+
+#Save
+save(mijs_nl, mijs_nl_ib,
+     file = here("Output",  "230313 - Mijs_NL_Databases.RData"))
 
 #Listwise
 # mijs_final1 = mijs_final %>% 
@@ -108,8 +146,6 @@ save(mijs_us, mijs_us_ib,
 
 #Attitudes
 #ineq_post5, ineq_post6
-
-frq(mijs_final, perceived_2_1)
 
 ```
 
