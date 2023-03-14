@@ -272,7 +272,7 @@ LCA_NL_8 <- poLCA(f1, data=NL, nclass=8, maxiter=3000, nrep=5)
 
 ##plot
  jpeg(file = '../Output/6NL.jpeg')
- plot(LCA_US_7)
+ plot(LCA_NL_6)
  dev.off()
 
 #comment for LCA6
