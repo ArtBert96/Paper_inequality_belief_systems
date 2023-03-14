@@ -147,10 +147,10 @@ US_CCA2_EGA = US_CCA %>%
   filter(mem == 3) %>%
   select(perc_income:ib_sex)
 
-ega_CCA1 <- EGA(data=US_CCA1_EGA,  model = "TMFG", 
+US_ega_CCA1<- EGA(data=US_CCA1_EGA,  model = "TMFG", 
                   plot.EGA = TRUE) 
 
-ega_CCA2 <- EGA(data=US_CCA2_EGA,  model = "TMFG", 
+US_ega_CCA2 <- EGA(data=US_CCA2_EGA,  model = "TMFG", 
                   plot.EGA = TRUE) 
 
 ```
@@ -312,10 +312,10 @@ NL_CCA2_EGA = NL_CCA %>%
   filter(mem == 3) %>%
   select(perc_income:ib_sex)
 
-ega_CCA1 <- EGA(data=NL_CCA1_EGA,  model = "TMFG", 
+NL_ega_CCA1 <- EGA(data=NL_CCA1_EGA,  model = "TMFG", 
                   plot.EGA = TRUE) 
 
-ega_CCA2 <- EGA(data=NL_CCA2_EGA,  model = "TMFG", 
+NL_ega_CCA2 <- EGA(data=NL_CCA2_EGA,  model = "TMFG", 
                   plot.EGA = TRUE) 
 
 ```
@@ -468,5 +468,14 @@ m3_NL = lm(att_redist ~ age + sex + race + education + working + politics +
 
 #xtable
 screenreg(list(m1_NL, m2_NL, m3_NL), stars = c(0.01,0.05,0.1))
+```
+
+# Output
+
+```{r}
+save(mijs_us, US_ega_CCA1, US_ega_CCA2, LCA_US_7, 
+     mijs_nl, NL_ega_CCA1, NL_ega_CCA2, LCA_NL_6, 
+     file = here("Output",  "230314 - Output.RData"))
+
 ```
 
