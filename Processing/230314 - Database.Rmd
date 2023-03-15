@@ -37,7 +37,8 @@ mijs = read_dta(here("Input", "data_full_stata.dta"))  %>%
 #Select variables
 mijs_final = mijs %>% 
   select(nomem_encr, survey, country, treatment, 
-         age, sex, race, education, working, politics, pol5, 
+         age, agegroups, sex, race, education, peducation, 
+         working, politics, pol5, 
          hhincome, immigrant, marital, religion, ladder_present,
          ineq_post1, ineq_post2, ineq_post3, ineq_post4,
          ineq_pre1, ineq_pre2, ineq_pre3,
@@ -45,7 +46,7 @@ mijs_final = mijs %>%
          ineq_post5, ineq_post6
          )
 
-mijs_final = mijs_final %>%
+mijs_final = mijs %>%
   rename(ib_weafam = belief_1,
          ib_edupar = belief_2,
          ib_edu = belief_3,
@@ -65,9 +66,9 @@ mijs_final = mijs_final %>%
          att_redist = ineq_post5, 
          att_discrim = ineq_post6) %>% 
   select(nomem_encr, survey, country, treatment, 
-         age, sex, race, education, working, politics, pol5, 
+         age, agegroups, sex, race, education, peducation,
+         working, politics, pol5, 
          hhincome, immigrant, marital, religion, ladder_present,
-         #perceived_2_1, perceived_3_1,
          starts_with("perc_"),
          starts_with("bel_"),
          starts_with("ib_"),

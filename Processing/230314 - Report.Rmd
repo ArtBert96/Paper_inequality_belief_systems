@@ -37,11 +37,29 @@ load(here("Output",  "230314 - pvalues.RData"))
 ```
 
 ```{r}
+mijs_us = mijs_us %>% 
+  mutate(CCA = ifelse(CCA=="3", "0", "1"))
+
+mijs_nl = mijs_nl %>% 
+  mutate(CCA = ifelse(CCA=="3", "1", "0"))
+
+frq(mijs_us, CCA)
+frq(mijs_nl, CCA)
+
+  
+```
+
+
+
+```{r}
 #Packages conflicts
 conflict_prefer("select", "dplyr")
 conflict_prefer("filter", "dplyr")
 conflict_prefer("lag", "dplyr")
 conflict_prefer("texreg", "extract")
+conflict_prefer("sjlabelled", "get_label")
+#conflict_prefer("labelled", "to_character")
+
 
 
 options(max.print=999999)
@@ -51,7 +69,8 @@ options(scipen=999999)
 # Variables
 
 ```{r}
-labels_data = as.data.frame(get_label(mijs_us)) %>% 
+labels_data = sjlabelled::get_label(mijs_us) %>%
+  as.data.frame() %>% 
   rownames_to_column(var = "variable") %>% 
   `colnames<-`(c("variable", "label")) %>% 
   slice(17:34)
@@ -274,15 +293,26 @@ mijs_us = mijs_us %>%
   mutate(CCA = as.factor(paste0(CCA)),
          hhincome = as.factor(paste0(hhincome)))
 
+mijs_us = mijs_us %>% 
+  mutate(treatment = as.factor(treatment))
+
 m1_US = lm(att_redist ~ CCA, data = mijs_us)
 m2_US = lm(att_redist ~ CCA + age + sex + race + education + working + politics + 
         hhincome + immigrant + marital + religion, data = mijs_us)
 m3_US = lm(att_redist ~ age + sex + race + education + working + politics + 
         hhincome + immigrant + marital + religion, data = mijs_us)
 
+#Treatment
+
+m1_US_t = lm(att_redist ~ CCA + treatment, data = mijs_us)
+m2_US_t = lm(att_redist ~ CCA + treatment + age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_us)
+m3_US_t = lm(att_redist ~ treatment + age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_us)
+
 
 #xtable
-screenreg(list(m1_US, m2_US, m3_US), stars = c(0.01,0.05,0.1))
+screenreg(list(m1_US, m2_US, m3_US, m1_US_t, m2_US_t, m3_US_t), stars = c(0.01,0.05,0.1))
 ```
 
 ### NL
@@ -293,14 +323,81 @@ mijs_nl = mijs_nl %>%
   mutate(CCA = as.factor(paste0(CCA)),
          hhincome = as.factor(paste0(hhincome)))
 
+mijs_nl = mijs_nl %>% 
+  mutate(treatment = as.factor(treatment))
+
 m1_NL = lm(att_redist ~ CCA, data = mijs_nl)
 m2_NL = lm(att_redist ~ CCA + age + sex + race + education + working + politics + 
         hhincome + immigrant + marital + religion, data = mijs_nl)
 m3_NL = lm(att_redist ~ age + sex + race + education + working + politics + 
         hhincome + immigrant + marital + religion, data = mijs_nl)
 
+#Treatment
+
+m1_NL_t = lm(att_redist ~ CCA + treatment, data = mijs_nl)
+m2_NL_t = lm(att_redist ~ CCA + treatment + age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_nl)
+m3_NL_t = lm(att_redist ~ treatment + age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_nl)
+
+
+#xtable
+screenreg(list(m1_NL, m2_NL, m3_NL, m1_NL_t, m2_NL_t, m3_NL_t), stars = c(0.01,0.05,0.1))
+```
+
+
+# Sociodemographic determinants of inequality belief systems
+
+
+## Regressions
+
+### US
+
+```{r}
+
+mijs_us = mijs_us %>% 
+  re
+
+#regression
+m1_US = lm(att_redist ~ CCA, data = mijs_us)
+m2_US = lm(att_redist ~ CCA + age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_us)
+m3_US = lm(att_redist ~ age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_us)
+
+#xtable
+screenreg(list(m1_US, m2_US, m3_US), stars = c(0.01,0.05,0.1))
+```
+
+### NL
+
+```{r}
+#regression
+m1_NL = lm(att_redist ~ CCA, data = mijs_nl)
+m2_NL = lm(att_redist ~ CCA + age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_nl)
+m3_NL = lm(att_redist ~ age + sex + race + education + working + politics + 
+        hhincome + immigrant + marital + religion, data = mijs_nl)
 
 #xtable
 screenreg(list(m1_NL, m2_NL, m3_NL), stars = c(0.01,0.05,0.1))
 ```
 
+# Pendant
+
+## Recode of control variables
+
+### US
+
+```{r}
+frq(mijs_us, age, sex, race, education, working, politics, immigrant, marital, religion, peducation)
+```
+
+
+### NL
+
+```{r}
+frq(mijs_us, age, sex, race, education, working, politics, immigrant, marital, religion)
+frq(mijs_nl, age, sex, race, education, working, politics, immigrant, marital, religion)
+
+```
