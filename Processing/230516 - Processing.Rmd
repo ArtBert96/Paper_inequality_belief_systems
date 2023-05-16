@@ -377,7 +377,7 @@ m3_nl = glm(cca ~ agegroups + sex + race + education + working + assets +
 ```{r}
 
 #Output
-tab_model(list(m1_us, m2_us, m3_us, m1_nl, m2_nl, m3_nl),
+sjPlot::tab_model(list(m1_us, m2_us, m3_us, m1_nl, m2_nl, m3_nl),
           show.p = TRUE,
           p.style = "stars",
           p.threshold = c(0.1, 0.05, 0.01),
@@ -467,16 +467,16 @@ ggsave(filename = here("Output", "Article", "Graphs", "Bar_Graph_Att_Redistribut
 
 #EGA US
 data_us_net = data_us %>% 
-  select(perc_income:ib_sex)
+  select(p_income:ib_sex)
 
-US_ega = EGA(data=data_us_net,  model = "TMFG", 
+US_ega = EGA(data=data_us_net,  model = "glasso", 
                   plot.EGA = TRUE) 
 
 #EGA NL
 data_nl_net = data_nl %>% 
-  select(perc_income:ib_sex)
+  select(p_income:ib_sex)
 
-NL_ega = EGA(data=data_nl_net,  model = "TMFG", 
+NL_ega = EGA(data=data_nl_net,  model = "glasso", 
                   plot.EGA = TRUE) 
 
 #CFA
@@ -486,15 +486,46 @@ data_cfa_nl = CFA(NL_ega, data_nl_net, estimator = "WLSMV")
 
 #Indexes
 data_us = data_us %>% 
-    mutate(index_1 = rowMeans(across(c(perc_income:perc_black, bel_diversity, bel_equality))),
-           index_2 = rowMeans(across(c(bel_merit, ib_work, ib_race:ib_sex))),
-           index_3 = rowMeans(across(c(ib_weafam:ib_edu, ib_people))))
+    mutate(index_1 = rowMeans(across(c(p_income:p_black, b_diversity, b_equality))),
+           index_2 = rowMeans(across(c(b_merit, ib_weafam:ib_people))),
+           index_3 = rowMeans(across(c(ib_race:ib_sex))))
 
 
 data_nl = data_nl %>% 
-    mutate(index_1 = rowMeans(across(c(perc_income:bel_equality))),
+    mutate(index_1 = rowMeans(across(c(p_income:b_equality))),
            index_2 = rowMeans(across(c(ib_race:ib_sex))),
            index_3 = rowMeans(across(c(ib_weafam:ib_people))))
+
+#Databases us
+index_1_us = data_us %>% 
+  select(p_income:p_black, b_diversity, b_equality)
+
+index_2_us = data_us %>% 
+  select(b_merit, ib_weafam:ib_people)
+
+index_3_us = data_us %>% 
+  select(ib_race:ib_sex)
+
+#Databases nl
+index_1_nl = data_us %>% 
+  select(p_income:b_equality)
+
+index_2_nl = data_us %>% 
+  select(ib_race:ib_sex)
+
+index_3_nl = data_us %>% 
+  select(ib_weafam:ib_people)
+
+#Cronbach us
+cronbach.alpha(index_1_us, CI=TRUE, standardized=TRUE) #0.858
+cronbach.alpha(index_2_us, CI=TRUE, standardized=TRUE) #0.456
+cronbach.alpha(index_3_us, CI=TRUE, standardized=TRUE) #0.735
+
+#Cronbach nl
+cronbach.alpha(index_1_nl, CI=TRUE, standardized=TRUE) #0.761
+cronbach.alpha(index_2_nl, CI=TRUE, standardized=TRUE) #0.735
+cronbach.alpha(index_3_nl, CI=TRUE, standardized=TRUE) #0.512
+
 ```
 
 
@@ -502,16 +533,16 @@ data_nl = data_nl %>%
 
 #US
 m0_us = lm(att_redist ~ index_1 + index_2 + index_3, data = data_us)
-m1_us = lm(att_redist ~ CCA, data = data_us)
-m2_us = lm(att_redist ~ index_1 + index_2 + index_3 + CCA, data = data_us)
-m3_us = lm(att_redist ~ index_1 + index_2 + index_3 + CCA + agegroups + sex + race + education + working + politics + 
+m1_us = lm(att_redist ~ cca, data = data_us)
+m2_us = lm(att_redist ~ index_1 + index_2 + index_3 + cca, data = data_us)
+m3_us = lm(att_redist ~ index_1 + index_2 + index_3 + cca + agegroups + sex + race + education + working + politics + 
         hhincome_groups + immigrant + marital + religion, data = data_us)
 
 #NL
 m0_nl = lm(att_redist ~ index_1 + index_2 + index_3, data = data_nl)
-m1_nl = lm(att_redist ~ CCA, data = data_nl)
-m2_nl = lm(att_redist ~ index_1 + index_2 + index_3 + CCA, data = data_nl)
-m3_nl = lm(att_redist ~ index_1 + index_2 + index_3 + CCA + agegroups + sex + race + education + working + politics + 
+m1_nl = lm(att_redist ~ cca, data = data_nl)
+m2_nl = lm(att_redist ~ index_1 + index_2 + index_3 + cca, data = data_nl)
+m3_nl = lm(att_redist ~ index_1 + index_2 + index_3 + cca + agegroups + sex + race + education + working + politics + 
         hhincome_groups + immigrant + marital + religion, data = data_nl)
 ```
 
@@ -519,7 +550,7 @@ m3_nl = lm(att_redist ~ index_1 + index_2 + index_3 + CCA + agegroups + sex + ra
 ```{r}
 
 #Output
-tab_model(list(m1_us_r, m2_us_r, m3_us_r, m4_us_r, m1_nl_r, m2_nl_r, m3_nl_r, m4_nl_r),
+tab_model(list(m0_us, m1_us, m2_us, m3_us, m0_nl, m1_nl, m2_nl, m3_nl),
           #order.terms = c(1:5, 23, 6:22),
           show.p = TRUE,
           p.style = "stars",
@@ -699,24 +730,6 @@ tab_model(list(m1_us_r, m2_us_r, m3_us_r, m4_us_r, m1_nl_r, m2_nl_r, m3_nl_r, m4
 ```
 
 
-### Regression: High
-
-#### US
-
-```{r}
-
-data_us_high = data_us %>% 
-  filter(att_redist>4)
-
-#Regression
-m1_us_rh = lm(att_redist ~ cca, data = data_us_high)
-m2_us_rh = lm(att_redist ~ age + sex + race + education + working + politics + 
-        hhincome_groups + immigrant + marital + religion, data = data_us_high)
-m3_us_rh = lm(att_redist ~ cca + age + sex + race + education + working + politics + 
-        hhincome_groups + immigrant + marital + religion, data = data_us_high)
-
-```
-
 #### NL
 
 ```{r}
@@ -803,4 +816,20 @@ tab_model(list(m1_us_ra, m2_us_ra, m3_us_ra, m4_us_ra, m1_nl_ra, m2_nl_ra, m3_nl
 ```
 
 
+### Regression: High
 
+#### US
+
+```{r}
+
+data_us_high = data_us %>% 
+  filter(att_redist>4)
+
+#Regression
+m1_us_rh = lm(att_redist ~ cca, data = data_us_high)
+m2_us_rh = lm(att_redist ~ age + sex + race + education + working + politics + 
+        hhincome_groups + immigrant + marital + religion, data = data_us_high)
+m3_us_rh = lm(att_redist ~ cca + age + sex + race + education + working + politics + 
+        hhincome_groups + immigrant + marital + religion, data = data_us_high)
+
+```
