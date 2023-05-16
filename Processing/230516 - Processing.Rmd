@@ -397,25 +397,188 @@ tab_model(list(m1_us, m2_us, m3_us, m1_nl, m2_nl, m3_nl),
 
 ## Inequality Belief Systems and Attitude Towards Redistribution
 
+### Graphs
+
+#### US
+
+```{r}
+
+#cross tab
+data_us %>%
+  select(cca, att_redist) %>%
+  flat_table(margin = "row", digits = 1)
+
+#graph
+data_us_n = nrow(data_us)
+
+crosstab_us = data_us %>%
+  group_by(cca) %>% 
+  mutate(n_cca = n()) %>%
+  group_by(cca, att_redist) %>% 
+  summarise(count = n(),
+           pct = count / n_cca) %>% 
+  slice(1) %>% 
+  ggplot(aes(y=pct, x=att_redist)) +
+  geom_col() +
+  facet_wrap(~cca) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = 1:7) +
+  labs(x="Attitude towards redistribution", y="Percentage")
+ggsave(filename = here("Output", "Article", "Graphs", "Bar_Graph_Att_Redistribution_US.jpg"), plot =  crosstab_us)
+```
+
+#### NL
+
+```{r}
+
+#cross tab
+data_nl %>%
+  select(cca, att_redist) %>%
+  flat_table(margin = "row", digits = 1)
+
+#graph
+data_nl_n = nrow(data_nl)
+
+crosstab_nl = data_nl %>%
+  group_by(cca) %>% 
+  mutate(n_cca = n()) %>%
+  group_by(cca, att_redist) %>% 
+  summarise(count = n(),
+           pct = count / n_cca) %>% 
+  slice(1) %>% 
+  ggplot(aes(y=pct, x=att_redist)) +
+  geom_col() +
+  facet_wrap(~cca) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = 1:7) +
+  labs(x="Attitude towards redistribution", y="Percentage")
+ggsave(filename = here("Output", "Article", "Graphs", "Bar_Graph_Att_Redistribution_NL.jpg"), plot =  crosstab_nl)
+```
+
+
+### Regressions
+
+
+#### Design A: Based on EGA communities
+
+##### EGA and indexes
+
+```{r}
+
+#EGA US
+data_us_net = data_us %>% 
+  select(perc_income:ib_sex)
+
+US_ega = EGA(data=data_us_net,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+#EGA NL
+data_nl_net = data_nl %>% 
+  select(perc_income:ib_sex)
+
+NL_ega = EGA(data=data_nl_net,  model = "TMFG", 
+                  plot.EGA = TRUE) 
+
+#CFA
+data_cfa_us = CFA(US_ega, data_us_net, estimator = "WLSMV")
+data_cfa_nl = CFA(NL_ega, data_nl_net, estimator = "WLSMV")
+
+
+#Indexes
+data_us = data_us %>% 
+    mutate(index_1 = rowMeans(across(c(perc_income:perc_black, bel_diversity, bel_equality))),
+           index_2 = rowMeans(across(c(bel_merit, ib_work, ib_race:ib_sex))),
+           index_3 = rowMeans(across(c(ib_weafam:ib_edu, ib_people))))
+
+
+data_nl = data_nl %>% 
+    mutate(index_1 = rowMeans(across(c(perc_income:bel_equality))),
+           index_2 = rowMeans(across(c(ib_race:ib_sex))),
+           index_3 = rowMeans(across(c(ib_weafam:ib_people))))
+```
+
+
+```{r}
+
+#US
+m0_us = lm(att_redist ~ index_1 + index_2 + index_3, data = data_us)
+m1_us = lm(att_redist ~ CCA, data = data_us)
+m2_us = lm(att_redist ~ index_1 + index_2 + index_3 + CCA, data = data_us)
+m3_us = lm(att_redist ~ index_1 + index_2 + index_3 + CCA + agegroups + sex + race + education + working + politics + 
+        hhincome_groups + immigrant + marital + religion, data = data_us)
+
+#NL
+m0_nl = lm(att_redist ~ index_1 + index_2 + index_3, data = data_nl)
+m1_nl = lm(att_redist ~ CCA, data = data_nl)
+m2_nl = lm(att_redist ~ index_1 + index_2 + index_3 + CCA, data = data_nl)
+m3_nl = lm(att_redist ~ index_1 + index_2 + index_3 + CCA + agegroups + sex + race + education + working + politics + 
+        hhincome_groups + immigrant + marital + religion, data = data_nl)
+```
+
+
+```{r}
+
+#Output
+tab_model(list(m1_us_r, m2_us_r, m3_us_r, m4_us_r, m1_nl_r, m2_nl_r, m3_nl_r, m4_nl_r),
+          #order.terms = c(1:5, 23, 6:22),
+          show.p = TRUE,
+          p.style = "stars",
+          p.threshold = c(0.1, 0.05, 0.01),
+          dv.labels = c("M1-US", "M2-US", "M3-US", "M4-US", "M1-NL", "M2-NL", "M3-NL", "M4-NL"),
+          collapse.ci = TRUE,
+          show.aic = TRUE,
+          #show.reflvl = TRUE,
+          title = "Table. Linear regression models on attitude towards redistribution - US & NL",
+          string.pred = " ",
+          auto.label = FALSE, 
+          file = here("Output", "Article", "Tables", "Attitude_Redistribution.html")
+)
+
+```
+
+
+#### Design B: Based on Cronbach Alphas
+
+
 ### Factors
 
 #### US
 
 ```{r}
-#EGA
-data_us_ega = data_us_cca %>% 
-  select(p_income:ib_sex)
+p_load(psych, nFactors )
 
-ega_us_full = EGA(data=data_us_ega,  model = "glasso") 
-ega_us_full_r = EGA(data=data_us_ega,  model = "glasso") 
-CFA(ega_us_full, data_us_ega, estimator = "WLSMV")
-CFA(ega_us_full_r, data_us_ega, estimator = "WLSMV")
+#Initial tests
+KMO(data_us_ega)
+cortest.bartlett(data_us_ega)
 
-ega_us_full$wc
+#Number of factors
+
+#FA
+ev_us <- eigen(cor(data_us_ega))
+ev_us$values
+scree(data_us_ega, pc=FALSE) 
+
+#PC
+pc_us = princomp(data_us_ega)
+screeplot(pc_us) 
+?screeplot
+
+#Both
+fa.parallel(data_us_ega)
+
+#FA
+fit_us_fa <- factanal(data_us_ega, factors=5, rotation = "varimax")
+fit_us5_fa
 
 #EFA
-efa(data_us_ega, nfactors = 4)
+fit_us5_efa = efa(data_us_ega, nfactors = 5, rotation = "oblimin")
+summary(fit_us5_efa, nd = 3L, cutoff = 0.2, dot.cutoff = 0.0)
 
+
+```
+
+
+```{r}
 #Factors
 data_us = data_us %>% 
     mutate(index_1 = rowMeans(across(c(p_income:p_black,b_diversity,b_equality))),
@@ -474,7 +637,6 @@ factor_nl3 = data_nl_ega %>%
   select(ib_race:ib_sex)
 
 
-
 #Cronbach
 cronbach.alpha(factor_nl1, CI=TRUE, standardized=TRUE) #0.719
 cronbach.alpha(factor_nl2, CI=TRUE, standardized=TRUE) #0.713
@@ -487,64 +649,6 @@ data_nl = data_nl %>%
          index_3 = rowMeans(across(c(ib_race:ib_sex))))
 ```
 
-### Graphs
-
-#### US
-
-```{r}
-
-#cross tab
-data_us %>%
-  select(cca, att_redist) %>%
-  flat_table(margin = "row", digits = 1)
-
-#graph
-data_us_n = nrow(data_us)
-
-crosstab_us = data_us %>%
-  group_by(cca) %>% 
-  mutate(n_cca = n()) %>%
-  group_by(cca, att_redist) %>% 
-  summarise(count = n(),
-           pct = count / n_cca) %>% 
-  slice(1) %>% 
-  ggplot(aes(y=pct, x=att_redist)) +
-  geom_col() +
-  facet_wrap(~cca) +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-  scale_x_continuous(breaks = 1:7) +
-  labs(x="Attitude towards redistribution", y="Percentage")
-ggsave(filename = here("Output", "Article", "Graphs", "Bar_Graph_Att_Redistribution_US.jpg"), plot =  crosstab_us)
-```
-
-
-#### NL
-
-```{r}
-
-#cross tab
-data_nl %>%
-  select(cca, att_redist) %>%
-  flat_table(margin = "row", digits = 1)
-
-#graph
-data_nl_n = nrow(data_nl)
-
-crosstab_nl = data_nl %>%
-  group_by(cca) %>% 
-  mutate(n_cca = n()) %>%
-  group_by(cca, att_redist) %>% 
-  summarise(count = n(),
-           pct = count / n_cca) %>% 
-  slice(1) %>% 
-  ggplot(aes(y=pct, x=att_redist)) +
-  geom_col() +
-  facet_wrap(~cca) +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-  scale_x_continuous(breaks = 1:7) +
-  labs(x="Attitude towards redistribution", y="Percentage")
-ggsave(filename = here("Output", "Article", "Graphs", "Bar_Graph_Att_Redistribution_NL.jpg"), plot =  crosstab_nl)
-```
 
 ### Regression
 
