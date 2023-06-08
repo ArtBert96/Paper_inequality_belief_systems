@@ -32,7 +32,8 @@ library(pacman)
 p_load(tidyverse, janitor, here, haven, labelled, sjmisc, skimr, ggplot2, jtools,
        stargazer, qgraph, Matrix, igraph, NetworkComparisonTest, bootnet,
        rio, foreign, matrixcalc, corclass, NetworkComparisonTest, conflicted, 
-       EGAnet, texreg, ggpubr, lavaan, ltm, kableExtra, sjPlot, psych, nFactors)
+       EGAnet, texreg, ggpubr, lavaan, ltm, kableExtra, sjPlot, psych, nFactors,
+       ggcorrplot)
 
 ```
 
@@ -118,7 +119,7 @@ agegroups, sex, race, education, working, assets,
 
 #CCA applied to ISSP US
 cca_group_us <- cca(data_us_cca, filter.significance = TRUE, filter.value = 0.01, 
-                 zero.action = c("ownclass"))  
+                 zero.action = c("ownclass")) 
 
 #Preliminary plots
 us_plot_cca_1 = plot(cca_group_us, 1)
@@ -205,6 +206,43 @@ data_nl_cca = data_nl_cca %>%
 
 ```
 
+## COR matrix
+
+### US
+```{r include=FALSE}
+#Cor matrix
+corr_us_0 <- round(cor(cca_us_0), 1)
+corr_us_1 <- round(cor(cca_us_1), 1)
+
+# Compute a matrix of correlation p-values
+p.mat_us_0 <- cor_pmat(cca_us_0)
+p.mat_us_1 <- cor_pmat(cca_us_1)
+
+# Visualization
+ggcorrplot(corr_us_0, hc.order = TRUE, type = "lower",
+     outline.col = "white")
+
+ggcorrplot(corr_us_1, hc.order = TRUE, type = "lower",
+     outline.col = "white")
+```
+
+### NL
+```{r include=FALSE}
+#Cor matrix
+corr_nl_0 <- round(cor(cca_nl_0), 1)
+corr_nl_1 <- round(cor(cca_nl_1), 1)
+
+# Compute a matrix of correlation p-values
+p.mat_nl_0 <- cor_pmat(cca_nl_0)
+p.mat_nl_1 <- cor_pmat(cca_nl_1)
+
+# Visualization
+ggcorrplot(corr_nl_0, hc.order = TRUE, type = "lower",
+     outline.col = "white")
+
+ggcorrplot(corr_nl_1, hc.order = TRUE, type = "lower",
+     outline.col = "white")
+```
 
 ## EGA
 
@@ -414,7 +452,7 @@ plot(nct_nl_plot)
 ```{r}
 #Regressions
 m1_us = glm(cca ~ politics, data = data_us, family=binomial(link="logit"))
-m2_us = glm(cca ~ politics + agegroups + sex + race + education + working + assets + 
+m2_us = glm(cca ~ politics + agegroups + sex + race + education + working + assets +
         hhincome_groups + immigrant + marital + religion, data = data_us, family=binomial(link="logit"))
 m3_us = glm(cca ~ agegroups + sex + race + education + working + assets + 
         hhincome_groups + immigrant + marital + religion, data = data_us, family=binomial(link="logit"))
