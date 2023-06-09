@@ -219,10 +219,10 @@ p.mat_us_0 <- cor_pmat(cca_us_0)
 p.mat_us_1 <- cor_pmat(cca_us_1)
 
 # Visualization
-ggcorrplot(corr_us_0, hc.order = TRUE, type = "lower",
+cor_m_us_0 = ggcorrplot(corr_us_0, type = "lower",
      outline.col = "white")
 
-ggcorrplot(corr_us_1, hc.order = TRUE, type = "lower",
+cor_m_us_1 = ggcorrplot(corr_us_1, type = "lower",
      outline.col = "white")
 ```
 
@@ -237,10 +237,10 @@ p.mat_nl_0 <- cor_pmat(cca_nl_0)
 p.mat_nl_1 <- cor_pmat(cca_nl_1)
 
 # Visualization
-ggcorrplot(corr_nl_0, hc.order = TRUE, type = "lower",
+cor_m_nl_0 = ggcorrplot(corr_nl_0, type = "lower",
      outline.col = "white")
 
-ggcorrplot(corr_nl_1, hc.order = TRUE, type = "lower",
+cor_m_nl_1 = ggcorrplot(corr_nl_1, type = "lower",
      outline.col = "white")
 ```
 
@@ -277,6 +277,7 @@ ega_us1 <- EGA(data=us_cca1_ega,  model = "glasso",
                     alpha = 0.8,
                     legend.position = "none", legend.size = NA,
                     edge.color = c("royalblue", "tomato")))
+?EGA
 ```
 
 ### NL
@@ -387,6 +388,11 @@ plot_ega_us_0
 plot_ega_us_1
 plot_ega_nl_0
 plot_ega_nl_1
+
+cor_m_us_0
+cor_m_us_1
+cor_m_nl_0
+cor_m_nl_1
 ```
 
 #### COR matrix with indexes
@@ -417,11 +423,14 @@ p.mat_us_0_index <- cor_pmat(cca_us_0_index)
 p.mat_us_1_index <- cor_pmat(cca_us_1_index)
 
 # Visualization
-ggcorrplot(corr_us_0_index, hc.order = TRUE, type = "lower",
+cor_m_ind_us_0 = ggcorrplot(corr_us_0_index, type = "lower",
      outline.col = "white")
 
-ggcorrplot(corr_us_1_index, hc.order = TRUE, type = "lower",
+cor_m_ind_us_1 = ggcorrplot(corr_us_1_index, type = "lower",
      outline.col = "white")
+
+cor_m_ind_us_0
+cor_m_ind_us_1
 ```
 
 ##### NL
