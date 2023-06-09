@@ -209,7 +209,7 @@ data_nl_cca = data_nl_cca %>%
 ## COR matrix
 
 ### US
-```{r include=FALSE}
+```{r include=TRUE}
 #Cor matrix
 corr_us_0 <- round(cor(cca_us_0), 1)
 corr_us_1 <- round(cor(cca_us_1), 1)
@@ -227,7 +227,7 @@ ggcorrplot(corr_us_1, hc.order = TRUE, type = "lower",
 ```
 
 ### NL
-```{r include=FALSE}
+```{r include=TRUE}
 #Cor matrix
 corr_nl_0 <- round(cor(cca_nl_0), 1)
 corr_nl_1 <- round(cor(cca_nl_1), 1)
@@ -389,7 +389,73 @@ plot_ega_nl_0
 plot_ega_nl_1
 ```
 
+#### COR matrix with indexes
 
+##### US
+
+```{r}
+# Indexes according to EGA by CCA group
+cca_us_0_index = cca_us_0 %>% 
+    mutate(perception_belief = rowMeans(across(c(p_income, p_wealth, p_poor, p_black, b_diversity, b_equality))),
+           individualist = rowMeans(across(c(b_merit, ib_weafam, ib_edu, ib_edupar, ib_work, ib_people))),
+           structuralist = rowMeans(across(c(ib_race, ib_migra, ib_relig, ib_sex)))) %>% 
+  select(perception_belief, individualist, structuralist)
+
+cca_us_1_index = cca_us_1 %>% 
+    mutate(perception_belief = rowMeans(across(c(p_income, p_wealth, p_poor, p_black, b_diversity, b_equality,
+                                                 b_merit))),
+           individualist = rowMeans(across(c(ib_edu, ib_edupar, ib_work))),
+           structuralist = rowMeans(across(c(ib_race, ib_migra, ib_relig, ib_sex, ib_people, ib_weafam)))) %>% 
+  select(perception_belief, individualist, structuralist)
+
+#Cor matrix
+corr_us_0_index <- round(cor(cca_us_0_index), 1)
+corr_us_1_index <- round(cor(cca_us_1_index), 1)
+
+# Compute a matrix of correlation p-values
+p.mat_us_0_index <- cor_pmat(cca_us_0_index)
+p.mat_us_1_index <- cor_pmat(cca_us_1_index)
+
+# Visualization
+ggcorrplot(corr_us_0_index, hc.order = TRUE, type = "lower",
+     outline.col = "white")
+
+ggcorrplot(corr_us_1_index, hc.order = TRUE, type = "lower",
+     outline.col = "white")
+```
+
+##### NL
+
+```{r}
+# Indexes according to EGA by CCA group
+cca_nl_0_index = cca_nl_0 %>% 
+    mutate(perception_belief = rowMeans(across(c(p_income, p_wealth, p_poor, p_black, b_diversity, b_equality))),
+           individualist = rowMeans(across(c(b_merit, ib_weafam, ib_edu, ib_edupar, ib_work, ib_people))),
+           structuralist = rowMeans(across(c(ib_race, ib_migra, ib_relig, ib_sex)))) %>% 
+  select(perception_belief, individualist, structuralist)
+
+cca_nl_1_index = cca_nl_1 %>% 
+    mutate(perception_belief = rowMeans(across(c(p_income, p_wealth, p_poor, p_black, b_diversity, b_equality,
+                                                 b_merit))),
+           individualist = rowMeans(across(c(ib_edu, ib_edupar, ib_work))),
+           structuralist = rowMeans(across(c(ib_race, ib_migra, ib_relig, ib_sex, ib_people, ib_weafam)))) %>% 
+  select(perception_belief, individualist, structuralist)
+
+#Cor matrix
+corr_nl_0_index <- round(cor(cca_nl_0_index), 1)
+corr_nl_1_index <- round(cor(cca_nl_1_index), 1)
+
+# Compute a matrix of correlation p-values
+p.mat_nl_0_index <- cor_pmat(cca_nl_0_index)
+p.mat_nl_1_index <- cor_pmat(cca_nl_1_index)
+
+# Visualization
+ggcorrplot(corr_nl_0_index, hc.order = TRUE, type = "lower",
+     outline.col = "white")
+
+ggcorrplot(corr_nl_1_index, hc.order = TRUE, type = "lower",
+     outline.col = "white")
+```
 
 ### NCT
 
