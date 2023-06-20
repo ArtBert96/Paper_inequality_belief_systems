@@ -222,7 +222,7 @@ p.mat_us_1 <- cor_pmat(cca_us_1)
 
 # Visualization
 cor_m_us_0 = ggcorrplot(corr_us_0, type = "lower", legend.title	= " ",
-     outline.col = "white") +
+     outline.col = "white", colors = c( "red", "white", "blue")) +
   ggtitle("US 0") +
   theme(plot.title = element_text(size=20, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"),
@@ -232,7 +232,7 @@ cor_m_us_0 = ggcorrplot(corr_us_0, type = "lower", legend.title	= " ",
   geom_hline(yintercept=1:ncol(corr_us_0)-0.5, colour="white", size=2) 
 
 cor_m_us_1 = ggcorrplot(corr_us_1, type = "lower", legend.title	= " ",
-     outline.col = "white") +
+     outline.col = "white", colors = c( "red", "white", "blue")) +
   ggtitle("US 1") +
   theme(plot.title = element_text(size=20, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"),
@@ -257,7 +257,7 @@ p.mat_nl_1 <- cor_pmat(cca_nl_1)
 
 # Visualization
 cor_m_nl_0 = ggcorrplot(corr_nl_0, type = "lower", legend.title	= " ",
-     outline.col = "white") +
+     outline.col = "white", colors = c( "red", "white", "blue")) +
   ggtitle("NL 0") +
   theme(plot.title = element_text(size=20, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"),
@@ -267,7 +267,7 @@ cor_m_nl_0 = ggcorrplot(corr_nl_0, type = "lower", legend.title	= " ",
   geom_hline(yintercept=1:ncol(corr_nl_0)-0.5, colour="white", size=2) 
 
 cor_m_nl_1 = ggcorrplot(corr_nl_1, type = "lower", legend.title	= " ",
-     outline.col = "white") +
+     outline.col = "white", colors = c( "red", "white", "blue")) +
   ggtitle("NL 1") +
   theme(plot.title = element_text(size=20, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"),
