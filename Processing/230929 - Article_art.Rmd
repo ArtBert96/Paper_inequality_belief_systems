@@ -885,31 +885,31 @@ lo <- layout(lmat, width = c(1, 1))
 plot_us1_freel = qgraph(ega_us_1$network, 
   layout = "spring", theme = "Borkulo", 
   labels = shortnames, 
-  cut = 0.10, title = "US1",
+  cut = 0.04, title = "US1",
   maximum = 1, vsize=10.0, label.cex=1.4,
   groups=groups_us1, color=totalgroup_cols,
   legend = FALSE, borders = FALSE)
 
-plot_us2_freel = qgraph(ega_us_2$network, 
-  layout = "spring", theme = "Borkulo", 
-  labels = shortnames, 
-  cut = 0.10, title = "US2",
-  maximum = 1, vsize=10.0, label.cex=1.4,
-  groups=groups_us2, color=totalgroup_cols,
-  legend = FALSE, borders = FALSE)
-
 plot_nl1_freel = qgraph(ega_nl_1$network, 
   layout = "spring", theme = "Borkulo", 
-  labels = shortnames, 
-  cut = 0.10, title = "NL1",
+  labels = shortnames, repulsion = 1.1,
+  cut = 0.04, title = "NL1",
   maximum = 1, vsize=10.0, label.cex=1.4,
   groups=groups_nl1, color=totalgroup_cols,
   legend = FALSE, borders = FALSE)
 
+plot_us2_freel = qgraph(ega_us_2$network, 
+  layout = "spring", theme = "Borkulo", 
+  labels = shortnames,
+  cut = 0.04, title = "US2",
+  maximum = 1, vsize=10.0, label.cex=1.4,
+  groups=groups_us2, color=totalgroup_cols,
+  legend = FALSE, borders = FALSE)
+
 plot_nl2_freel = qgraph(ega_nl_2$network, 
   layout = "spring", theme = "Borkulo", 
-  labels = shortnames, 
-  cut = 0.10, title = "NL2",
+  labels = shortnames, repulsion = 1.1,
+  cut = 0.04, title = "NL2",
   maximum = 1, vsize=10.0, label.cex=1.4,
   groups=groups_nl2, color=totalgroup_cols,
   legend = FALSE, borders = FALSE)
@@ -1073,5 +1073,11 @@ ega_us2$network
 #Their cor
 cor_us1_us2 = cor(c(as.matrix(ega_us_1$network)), c(as.matrix(ega_us_2$network))) #0.9318663
 #notice correlations are so high because of the multitude of 0s!
+```
+
+```{r}
+#additional checks to determine who believes in meritocracy
+mean(nl_cca_1_ega$b_merit)
+mean(nl_cca_2_ega$b_merit)
 ```
 
