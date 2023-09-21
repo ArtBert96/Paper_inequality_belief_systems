@@ -1076,7 +1076,7 @@ cor_us1_us2 = cor(c(as.matrix(ega_us_1$network)), c(as.matrix(ega_us_2$network))
 ```
 
 ```{r}
-#additional checks to determine who believes in meritocracy
+#additional checks to determine who believes in meritocracy in nl
 mean(nl_cca_1_ega$b_merit)
 mean(nl_cca_2_ega$b_merit)
 #huge diff in merit
@@ -1086,6 +1086,23 @@ mean(nl_cca_2_ega$ib_edu)
 mean(nl_cca_1_ega$ib_race)
 mean(nl_cca_2_ega$ib_race)
 #tiny also for struct
+mean(nl_cca_1_ega$p_income)
+mean(nl_cca_2_ega$p_income)
+mean(nl_cca_1_ega$p_wealth)
+mean(nl_cca_2_ega$p_wealth)
+#huge in diff perceptions
+```
 
+```{r}
+#additional checks to determine who believes in meritocracy in us
+mean(us_cca_1_ega$b_merit)
+mean(us_cca_2_ega$b_merit)
+#huge diff in merit
+mean(us_cca_1_ega$ib_edu)
+mean(us_cca_2_ega$ib_edu)
+#tiny diff in indiv
+mean(us_cca_1_ega$ib_race)
+mean(us_cca_2_ega$ib_race)
+#tiny also for struct
 ```
 
