@@ -445,10 +445,55 @@ ega_nl_2 <- EGA(data=cca_nl_2,  model = "glasso",
 ### Plot
 
 ```{r}
-#EGA list
 list_data_egas <- lapply(ls(pattern="^ega_"), function(x) get(x))
 list_data_egas <- list_data_egas[c(3,4,1,2)]
 cca_groups = c("US1", "US2", "NL1", "NL2")
+cca_groups_names = c("Uniformly integrated (US1)", 
+                     "Contentiously integrated (US2)", 
+                     "Uniformly compartimentalized (NL1)", 
+                     "Contentiously compartimentalized (NL2)")
+```
+
+#### Standardized
+
+```{r}
+
+comp_egas = compare.EGA.plots(
+  input.list = list_data_egas,
+  base.plot = 1,
+  labels = cca_groups_names,
+  rows = 2, columns = 2,
+  plot.args = list(
+    plot.type = "qgraph",
+    vsize = 15,
+    node.alpha = 0.8,
+    #edge.size	= 0.5,
+    legend.position = "none", 
+    legend.size = FALSE,
+    # edge.color = c("blue", "red"),
+    plot.margin = margin(6,6,6,6, "cm")
+  ))
+
+#Full plot
+comp_egas_full = comp_egas$comparison.plot
+
+plot_egas <- lapply(ls(pattern="^plot_ega_"), function(x) get(x))
+plot_egas <- plot_egas[c(3,4,1,2)]
+
+g_plot_egas = ggarrange(plotlist = plot_egas, ncol = 2, nrow = 2) 
+
+
+#Save
+ggsave(here("Output", "Article", "Graphs", "EGA_multi_std.png"), 
+       comp_egas, height = 12, width = 12)
+
+comp_egas$comparison.plot
+
+```
+
+#### Non standardized
+
+```{r}
 
 #Common objects
 totalgroup_cols <- c("darkorange","purple2","seagreen2")
@@ -477,7 +522,7 @@ groups_nl2 = list(
  " "=c(8:12),
  " "=c(13:16))
 
-png(filename  = here("Output", "Article", "Graphs" ,"EGA_multi_freel_1.png"), 
+png(filename  = here("Output", "Article", "Graphs" ,"EGA_multi_nostd.png"), 
      height = 12, width = 12, units = "cm", res = 1000)
 lmat <- matrix(1:4, 2, 2)
 lo <- layout(lmat, width = c(1, 1))
