@@ -1,5 +1,5 @@
 ---
-title: "Design 1: Inequality Belief Systems and Attitude Towards Redistribution in US and the Netherlands"
+title: "Article"
 author: ""
 #date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
@@ -269,37 +269,27 @@ save(data_final, data_us, data_us_cca, data_nl, data_nl_cca,
 ### US
 
 ```{r}
-
 data_us_skim  = data_us %>% 
   select(starts_with("p_"),
          starts_with("b_"),
          starts_with("ib_"),
-         starts_with("att_"),
-agegroups, sex, race, education, working,
-        hhincome_groups, immigrant, marital, religion) %>%
-  mutate_if(is.character, as.numeric) %>% 
-  mutate_if(is.factor, as.numeric) %>% 
-  as.data.frame() %>% 
-  stargazer(type = "text")
-
+         starts_with("att_"))
+         
+#save
+save(data_us_skim, file = here("Output",  "descriptives_us.RData"))
 ```
 
 ### NL
 
 ```{r}
-
 data_nl_skim  = data_nl %>% 
   select(starts_with("p_"),
          starts_with("b_"),
          starts_with("ib_"),
-         starts_with("att_"),
-agegroups, sex, race, education, working,
-        hhincome_groups, immigrant, marital, religion) %>% 
-  mutate_if(is.character, as.numeric) %>% 
-  mutate_if(is.factor, as.numeric) %>% 
-  as.data.frame() %>% 
-  stargazer(type = "text")
+         starts_with("att_"))
 
+#save
+save(data_nl_skim, file = here("Output",  "descriptives_nl.RData"))
 ```
 
 
@@ -398,6 +388,7 @@ ggsave(here("Output", "Article", "Graphs", "cor_full.jpg"),
 
 ```{r}
 #EGA
+set.seed(1)
 ega_us_1 <- EGA(data=cca_us_1,  model = "glasso", 
                   plot.EGA = TRUE, 
                   plot.args = list(
@@ -407,6 +398,7 @@ ega_us_1 <- EGA(data=cca_us_1,  model = "glasso",
                     legend.position = "none", legend.size = NA,
                     edge.color = c("royalblue", "tomato")))
 
+set.seed(1)
 ega_us_2 <- EGA(data=cca_us_2,  model = "glasso", 
                   plot.EGA = TRUE, 
                   plot.args = list(
@@ -422,6 +414,7 @@ ega_us_2 <- EGA(data=cca_us_2,  model = "glasso",
 
 ```{r}
 #EGA
+set.seed(1)
 ega_nl_1 <- EGA(data=cca_nl_1,  model = "glasso", 
                   plot.EGA = TRUE, 
                   plot.args = list(
@@ -431,6 +424,7 @@ ega_nl_1 <- EGA(data=cca_nl_1,  model = "glasso",
                     legend.position = "none", legend.size = NA,
                     edge.color = c("royalblue", "tomato")))
 
+set.seed(1)
 ega_nl_2 <- EGA(data=cca_nl_2,  model = "glasso", 
                   plot.EGA = TRUE, 
                   plot.args = list(
@@ -448,10 +442,10 @@ ega_nl_2 <- EGA(data=cca_nl_2,  model = "glasso",
 list_data_egas <- lapply(ls(pattern="^ega_"), function(x) get(x))
 list_data_egas <- list_data_egas[c(3,4,1,2)]
 cca_groups = c("US1", "US2", "NL1", "NL2")
-cca_groups_names = c("Uniformly integrated (US1)", 
-                     "Contentiously integrated (US2)", 
-                     "Uniformly compartimentalized (NL1)", 
-                     "Contentiously compartimentalized (NL2)")
+cca_groups_names = c("US1", 
+                     "US2", 
+                     "NL1", 
+                     "NL2")
 ```
 
 #### Standardized
@@ -468,9 +462,10 @@ comp_egas = compare.EGA.plots(
     vsize = 15,
     node.alpha = 0.8,
     #edge.size	= 0.5,
+    legend = FALSE,
     legend.position = "none", 
     legend.size = FALSE,
-    # edge.color = c("blue", "red"),
+    edge.color = c("royalblue", "tomato"),
     plot.margin = margin(6,6,6,6, "cm")
   ))
 
@@ -484,10 +479,8 @@ g_plot_egas = ggarrange(plotlist = plot_egas, ncol = 2, nrow = 2)
 
 
 #Save
-ggsave(here("Output", "Article", "Graphs", "EGA_multi_std.png"), 
-       comp_egas, height = 12, width = 12)
-
-comp_egas$comparison.plot
+ggsave(here("Output", "Supplemental", "EGA_multi_std.png"), 
+       comp_egas$comparison.plot, height = 12, width = 12)
 
 ```
 
@@ -733,6 +726,7 @@ data_final %>%
 data_us_net = data_us %>% 
   select(p_income:ib_sex)
 
+set.seed(1)
 US_ega = EGA(data=data_us_net,  model = "glasso", 
                   plot.EGA = TRUE) 
 
@@ -740,6 +734,7 @@ US_ega = EGA(data=data_us_net,  model = "glasso",
 data_nl_net = data_nl %>% 
   select(p_income:ib_sex)
 
+set.seed(1)
 NL_ega = EGA(data=data_nl_net,  model = "glasso", 
                   plot.EGA = TRUE) 
 
@@ -767,9 +762,9 @@ index_2_us = data_us %>%
 index_3_us = data_us %>% 
   select(b_merit, ib_weafam, ib_edu, ib_edupar, ib_work, ib_people)
 
-cronbach.alpha(index_1_us, CI=TRUE, standardized=TRUE) # 0.858
-cronbach.alpha(index_2_us, CI=TRUE, standardized=TRUE) # 0.457
-cronbach.alpha(index_3_us, CI=TRUE, standardized=TRUE) # 0.738
+a_us_1 = cronbach.alpha(index_1_us, CI=TRUE, standardized=TRUE) # 0.858
+a_us_2 = cronbach.alpha(index_2_us, CI=TRUE, standardized=TRUE) # 0.738
+a_us_3 = cronbach.alpha(index_3_us, CI=TRUE, standardized=TRUE) # 0.457
 
 #Cronbach NL
 index_1_nl = data_us %>% 
@@ -781,10 +776,16 @@ index_2_nl = data_us %>%
 index_3_nl = data_us %>% 
   select(ib_weafam, ib_edu, ib_edupar, ib_work, ib_people)
 
-cronbach.alpha(index_1_nl, CI=TRUE, standardized=TRUE) # 0.760
-cronbach.alpha(index_2_nl, CI=TRUE, standardized=TRUE) # 0.512
-cronbach.alpha(index_3_nl, CI=TRUE, standardized=TRUE) # 0.738
+a_nl_1 = cronbach.alpha(index_1_nl, CI=TRUE, standardized=TRUE) # 0.760
+a_nl_2 = cronbach.alpha(index_2_nl, CI=TRUE, standardized=TRUE) # 0.738
+a_nl_3 = cronbach.alpha(index_3_nl, CI=TRUE, standardized=TRUE) # 0.512
 
+#Gather alphas and save
+alphas = tibble(Index = c("Index 1", "Index 2", "Index 3"),
+                Alpha_US = round(c(a_us_1$alpha, a_us_2$alpha, a_us_3$alpha),3),
+                Alpha_NL = round(c(a_nl_1$alpha, a_nl_2$alpha, a_nl_3$alpha),3))
+
+save(alphas, file = here("Output",  "alphas.RData"))
 ```
 
 ```{r}
@@ -840,5 +841,202 @@ tab_model(list(m0_us_b, m1_us_b, m2_us_b, m0_nl_b, m1_nl_b, m2_nl_b),
 #           file = here("Output", "Article", "Tables", "Attitude_Redistribution_A_Reduced.html")
 # )
 
+```
+
+## Stability (bootsrap)
+```{r}
+#US1
+
+# Perform Bootstrap EGA
+ega_us_1_boot <- bootEGA(
+  data = cca_us_1,
+  iter = 2000,
+  seed = 1,
+  EGA.type = "EGA",
+  model = "glasso",
+  ncores = 8)
+
+#compare bootstrapped vs sample EGA
+ega_us_1_boot_sample <- compare.EGA.plots(
+  ega_us_1, ega_us_1_boot,
+  labels = c("Empirical", "Bootstrap"),
+  plot.args = list(plot.type = "qgraph",
+                   vsize = 15, 
+                   node.alpha = 0.8,
+                   legend.position = "none", legend.size = NA,
+                   edge.color = c("royalblue", "tomato")))
+
+ggsave(here("Output", "Supplemental", "ega_us_1_boot_sample.png"), 
+       ega_us_1_boot_sample$comparison.plot, height = 12, width = 12)
+
+#stability of dimensions
+ega_us_1_stability = dimensionStability(ega_us_1_boot)
+
+ggsave(here("Output", "Supplemental", "ega_us_1_stability.png"), 
+       ega_us_1_stability$item.stability$plot)
+
+```
+
+```{r}
+#US2
+
+# Perform Bootstrap EGA
+ega_us_2_boot <- bootEGA(
+  data = cca_us_2,
+  iter = 2000,
+  seed = 1,
+  EGA.type = "EGA",
+  model = "glasso",
+  ncores = 8)
+
+#compare bootstrapped vs sample EGA
+ega_us_2_boot_sample <- compare.EGA.plots(
+  ega_us_2, ega_us_2_boot,
+  labels = c("Empirical", "Bootstrap"),
+  plot.args = list(plot.type = "qgraph",
+                   vsize = 15, 
+                   node.alpha = 0.8,
+                   legend.position = "none", legend.size = NA,
+                   edge.color = c("royalblue", "tomato")))
+
+ggsave(here("Output", "Supplemental", "ega_us_2_boot_sample.png"), 
+       ega_us_2_boot_sample$comparison.plot, height = 12, width = 12)
+
+#stability of dimensions
+ega_us_2_stability = dimensionStability(ega_us_2_boot)
+
+ggsave(here("Output", "Supplemental", "ega_us_2_stability.png"), 
+       ega_us_2_stability$item.stability$plot)
+
+#assess stability of number of dimensions
+table(ega_us_2_boot$boot.ndim[,2])
+```
+
+```{r}
+#NL1
+
+# Perform Bootstrap EGA
+ega_nl_1_boot <- bootEGA(
+  data = cca_nl_1,
+  iter = 2000,
+  seed = 1,
+  EGA.type = "EGA",
+  model = "glasso",
+  ncores = 8)
+
+#compare bootstrapped vs sample EGA
+ega_nl_1_boot_sample <- compare.EGA.plots(
+  ega_nl_1, ega_nl_1_boot,
+  labels = c("Empirical", "Bootstrap"),
+  plot.args = list(plot.type = "qgraph",
+                   vsize = 15, 
+                   node.alpha = 0.8,
+                   legend.position = "none", legend.size = NA,
+                   edge.color = c("royalblue", "tomato")))
+
+ggsave(here("Output", "Supplemental", "ega_nl_1_boot_sample.png"), 
+       ega_nl_1_boot_sample$comparison.plot, height = 12, width = 12)
+
+#stability of dimensions
+ega_nl_1_stability = dimensionStability(ega_nl_1_boot)
+
+ggsave(here("Output", "Supplemental", "ega_nl_1_stability.png"), 
+       ega_nl_1_stability$item.stability$plot)
+```
+
+```{r}
+#NL1
+
+# Perform Bootstrap EGA
+ega_nl_2_boot <- bootEGA(
+  data = cca_nl_2,
+  iter = 2000,
+  seed = 1,
+  EGA.type = "EGA",
+  model = "glasso",
+  ncores = 8)
+
+#compare bootstrapped vs sample EGA
+ega_nl_2_boot_sample <- compare.EGA.plots(
+  ega_nl_2, ega_nl_2_boot,
+  labels = c("Empirical", "Bootstrap"),
+  plot.args = list(plot.type = "qgraph",
+                   vsize = 15, 
+                   node.alpha = 0.8,
+                   legend.position = "none", legend.size = NA,
+                   edge.color = c("royalblue", "tomato")))
+
+ggsave(here("Output", "Supplemental", "ega_nl_2_boot_sample.png"), 
+       ega_nl_2_boot_sample$comparison.plot, height = 12, width = 12)
+
+#stability of dimensions
+ega_nl_2_stability = dimensionStability(ega_nl_2_boot)
+
+ggsave(here("Output", "Supplemental", "ega_nl_2_stability.png"), 
+       ega_nl_2_stability$item.stability$plot)
+```
+
+```{r}
+#US full sample
+
+# Perform Bootstrap EGA
+ega_us_full_boot <- bootEGA(
+  data = data_us_net,
+  iter = 2000,
+  seed = 1,
+  EGA.type = "EGA",
+  model = "glasso",
+  ncores = 8)
+
+#compare bootstrapped vs sample EGA
+ega_us_full_boot_sample <- compare.EGA.plots(
+  US_ega, ega_us_full_boot,
+  labels = c("Empirical", "Bootstrap"),
+  plot.args = list(plot.type = "qgraph",
+                   vsize = 15, 
+                   node.alpha = 0.8,
+                   legend.position = "none", legend.size = NA,
+                   edge.color = c("royalblue", "tomato")))
+
+ggsave(here("Output", "Supplemental", "ega_us_full_boot_sample.png"), 
+       ega_us_full_boot_sample$comparison.plot, height = 12, width = 12)
+
+#stability of dimensions
+ega_us_full_stability = dimensionStability(ega_us_full_boot)
+
+ggsave(here("Output", "Supplemental", "ega_us_full_stability.png"), 
+       ega_us_full_stability$item.stability$plot)
+```
+
+```{r}
+#NL full sample
+
+# Perform Bootstrap EGA
+ega_nl_full_boot <- bootEGA(
+  data = data_nl_net,
+  iter = 2000,
+  seed = 1,
+  EGA.type = "EGA",
+  model = "glasso",
+  ncores = 8)
+
+#compare bootstrapped vs sample EGA
+ega_nl_full_boot_sample <- compare.EGA.plots(
+  NL_ega, ega_nl_full_boot,
+  labels = c("Empirical", "Bootstrap"),
+  plot.args = list(plot.type = "qgraph",
+                   vsize = 15, 
+                   node.alpha = 0.8,
+                   legend.position = "none", legend.size = NA,
+                   edge.color = c("royalblue", "tomato")))
+
+ggsave(here("Output", "Supplemental", "ega_nl_full_boot_sample.png"), 
+       ega_nl_full_boot_sample$comparison.plot, height = 12, width = 12)
+
+#stability of dimensions
+ega_nl_full_stability = dimensionStability(ega_nl_full_boot)
+
+ggsave(here("Output", "Supplemental", "ega_nl_full_stability.png"), 
+       ega_nl_full_stability$item.stability$plot)
 ```
 

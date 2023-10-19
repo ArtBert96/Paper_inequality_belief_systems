@@ -490,8 +490,8 @@ groups_nl2 = list(
  " "=c(8:12),
  " "=c(13:16))
 
-tiff(filename  = here("Output", "Article", "Graphs" ,"EGA_multi_freel.tif"), 
-     height = 12, width = 12, units = "cm", res = 3000)
+png(filename  = here("Output", "Article", "Graphs" ,"EGA_multi_freel.png"), 
+     height = 12, width = 12, units = "cm", res = 1000)
 lmat <- matrix(1:4, 2, 2)
 lo <- layout(lmat, width = c(1, 1))
 
