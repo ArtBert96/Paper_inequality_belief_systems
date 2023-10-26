@@ -429,7 +429,7 @@ comp_egas = compare.EGA.plots(
 #Individual plots
 plot_egastd_us1 = plot(comp_egas$individual[[1]]) +
       ggtitle(cca_groups_names[1]) +
-      theme(plot.title = element_text(size=15, face="bold", hjust = 0.5),
+      theme(plot.title = element_text(size=17, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"))
 
 ggsave(here("Output", "Supplemental", "ega_std_us1.jpg"), 
@@ -438,7 +438,7 @@ ggsave(here("Output", "Supplemental", "ega_std_us1.jpg"),
 
 plot_egastd_us2 = plot(comp_egas$individual[[2]]) +
       ggtitle(cca_groups_names[2]) +
-      theme(plot.title = element_text(size=15, face="bold", hjust = 0.5),
+      theme(plot.title = element_text(size=17, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"))
 
 ggsave(here("Output", "Supplemental", "ega_std_us2.jpg"), 
@@ -447,7 +447,7 @@ ggsave(here("Output", "Supplemental", "ega_std_us2.jpg"),
 
 plot_egastd_nl1 = plot(comp_egas$individual[[3]]) +
       ggtitle(cca_groups_names[3]) +
-      theme(plot.title = element_text(size=15, face="bold", hjust = 0.5),
+      theme(plot.title = element_text(size=17, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"))
 
 ggsave(here("Output", "Supplemental", "ega_std_nl1.jpg"), 
@@ -456,7 +456,7 @@ ggsave(here("Output", "Supplemental", "ega_std_nl1.jpg"),
 
 plot_egastd_nl2 = plot(comp_egas$individual[[4]]) +
       ggtitle(cca_groups_names[4]) +
-      theme(plot.title = element_text(size=15, face="bold", hjust = 0.5),
+      theme(plot.title = element_text(size=17, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"))
 
 ggsave(here("Output", "Supplemental", "ega_std_nl2.jpg"), 
@@ -494,7 +494,7 @@ plot_eganostd_us1 = plot(ega_us_1,
 
 plot_eganostd_us1 = plot_eganostd_us1  +
       ggtitle(cca_groups_names[1]) +
-      theme(plot.title = element_text(size=15, face="bold", hjust = 0.5),
+      theme(plot.title = element_text(size=17, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"))
 
 ggsave(here("Output", "Supplemental", "ega_nostd_us1.jpg"), 
@@ -513,7 +513,7 @@ plot_eganostd_us2 = plot(ega_us_2,
 
 plot_eganostd_us2 = plot_eganostd_us2  +
       ggtitle(cca_groups_names[2]) +
-      theme(plot.title = element_text(size=15, face="bold", hjust = 0.5),
+      theme(plot.title = element_text(size=17, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"))
 
 ggsave(here("Output", "Supplemental", "ega_nostd_us2.jpg"), 
@@ -532,7 +532,7 @@ plot_eganostd_nl1 = plot(ega_nl_1,
 
 plot_eganostd_nl1 = plot_eganostd_nl1  +
       ggtitle(cca_groups_names[3]) +
-      theme(plot.title = element_text(size=15, face="bold", hjust = 0.5),
+      theme(plot.title = element_text(size=17, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"))
 
 ggsave(here("Output", "Supplemental", "ega_nostd_nl1.jpg"), 
@@ -551,7 +551,7 @@ plot_eganostd_nl2 = plot(ega_nl_2,
 
 plot_eganostd_nl2 = plot_eganostd_nl2  +
       ggtitle(cca_groups_names[4]) +
-      theme(plot.title = element_text(size=15, face="bold", hjust = 0.5),
+      theme(plot.title = element_text(size=17, face="bold", hjust = 0.5),
             plot.margin = margin(2,2,2,2, "mm"))
 
 ggsave(here("Output", "Supplemental", "ega_nostd_nl2.jpg"), 
@@ -701,7 +701,7 @@ crosstab_us_nl = data_crosstab_us_nl %>%
   scale_x_continuous(breaks = 1:7) +
   labs(x="Attitude towards redistribution", y="Percentage") +
   theme_nice() +
-  theme(strip.text = element_text(colour = 'black'))
+  theme(strip.text = element_text(colour = 'black', size = 10.5))
 
 
 ggsave(filename = here("Output", "Article", "Graphs", "redist_full.jpg"), 
