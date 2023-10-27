@@ -29,10 +29,10 @@ knitr::opts_chunk$set(
 ```
 
 ```{r}
+#remotes::install_github("gorkang/html2latex")
 library(pacman)
 p_load(tinytex, tidyverse, stargazer, here, haven, kableExtra, 
        summarytools, sjPlot, sjtable2df, parameters, html2latex)
-
 ```
 
 ```{r}
@@ -51,10 +51,8 @@ to study them, and why they matter". We report a list of tables and figures at t
 
 * **Linear regression models on attitude toward redistribution:** Table 7 and Table 8 report the full set of coefficients of the linear regression models for attitude toward redistribution, presented in an abbreviated form in Section 4.4 (Table 2: Linear regression models on support for redistribution - US; Table 3: Linear regression models on support for redistribution - NL).
 
-* **Standardized EGA Plot:** To facilitate the direct comparison of the 4 belief systems, we report a standardized plot. In Figure 1, the layout of the networks is kept constant across the US and NL networks. 
-
 * **Robustness of EGA:** To detect the robustness of EGA results we adopt parametric bootstrap technique. For each network shown in the article, we reseample with replacement 2000 bootstrapped samples. Then, we re-estimate EGA on each of the 2000 bootstrapped samples. This allow us to compare the results of the EGA fitted on the original sample with the average results of obtained in the bootstrapped samples. Moreover, we are also able to estimate the stability of the community detection algorithm, by examining the extent to which each empirically derived dimension is exactly recovered from the replicate bootstrap samples. In the article we estimated six network structures: one for each CCA cluster (two in US, two in NL) and one for each country. For each of these six network we report two figures. First, we compare the network structures retrieved in the original samples with the average structures obtained by aggregating the results of the bootstrapped samples. Effectively, this results in a figure comparing the original networks shown in the article and the average network obtained in the bootstrapped samples. Moreover, we report a plot showing how often the membership of each variable is replicating across bootstraps. Regarding this plot, item scores greater than 0.70 reflect sufficient stability [(Christensen & Golino, 2021)](https://www.mdpi.com/2624-8611/3/3/32). 
-Results are shown in Figures 2 to Figures 13. Overall, the sample and bootstrapped EGAs are always similar, and community detection results are robust and overcome the bootstrap robustness tests. The only exceptions to these patterns are the nodes ib_people, and ib_weafam in the US2 network, and the node b_merit in the US1 and US2 networks. These nodes change their community membership across bootstrapped samples. However, the results regarding the number of communities of US1 EGA is highly stable. Indeed, 1946 of the 2000 bootstrapped samples displayed 3 clusters; only 1 bootstrapped sample displayed 2 clusters, and only 53 samples produced 4 communities. Moreover, the edges of the sample and bootstrapped networks do not differ meaningfully. This entails that the instability of this network is due to the community membership of some of its node, and not to its edges. Since our analyses of the four belief system mainly focused on the latter, and utilized nodes' community membership as a descriptive tool, we are not concerned with this kind of instability. Instability at the community membership level would be a concern only for the full sample networks. Indeed, these communities dictated the formation of the indexes for the regressions of Section 4.4. However, these results are remarkably stable (item stability always higher than .74 in NL, and higher than .96 in US). 
+Results are shown in Figures 1 to Figures 12. Overall, the sample and bootstrapped EGAs are always similar, and community detection results are robust and overcome the bootstrap robustness tests. The only exceptions to these patterns are the nodes ib_people, and ib_weafam in the US2 network, and the node b_merit in the US1 and US2 networks. These nodes change their community membership across bootstrapped samples. However, the results regarding the number of communities of US1 EGA is highly stable. Indeed, 1946 of the 2000 bootstrapped samples displayed 3 clusters; only 1 bootstrapped sample displayed 2 clusters, and only 53 samples produced 4 communities. Moreover, the edges of the sample and bootstrapped networks do not differ meaningfully. This entails that the instability of this network is due to the community membership of some of its node, and not to its edges. Since our analyses of the four belief system mainly focused on the latter, and utilized nodes' community membership as a descriptive tool, we are not concerned with this kind of instability. Instability at the community membership level would be a concern only for the full sample networks. Indeed, these communities dictated the formation of the indexes for the regressions of Section 4.4. However, these results are remarkably stable (item stability always higher than .74 in NL, and higher than .96 in US). 
 
 \newpage
 
@@ -620,61 +618,57 @@ p\textless0.01} \\
 
 \newpage
           
-![Standardised EGA](../Output/Supplemental/EGA_multi_std.png)
-\centering
-Figure 1: Standardized EGA Plot
-
 ![Comparision US1 with bootstrapped US1](../Output/Supplemental/ega_us_1_boot_sample.png) 
 \centering
-Figure 2: Comparison US1 with bootstrapped US1
+Figure 1: Comparison US1 with bootstrapped US1
 
 
 ![Stability US1](../Output/Supplemental/ega_us_1_stability.png) 
 \centering
-Figure 3: Item stability US1
+Figure 2: Item stability US1
 
 
 ![Comparison US2 with bootstrapped US2](../Output/Supplemental/ega_us_2_boot_sample.png) 
 \centering
-Figure 4: Comparison US2 with bootstrapped US2
+Figure 3: Comparison US2 with bootstrapped US2
 
 
 ![Stability US2](../Output/Supplemental/ega_us_2_stability.png)
 \centering
-Figure 5: Item stability US2
+Figure 4: Item stability US2
 
 ![Comparision NL1 with bootstrapped NL1](../Output/Supplemental/ega_nl_1_boot_sample.png) 
 \centering
-Figure 6: Comparison NL1 with bootstrapped NL1
+Figure 5: Comparison NL1 with bootstrapped NL1
 
 
 ![Stability NL1](../Output/Supplemental/ega_nl_1_stability.png) 
 \centering
-Figure 7: Item stability US1
+Figure 6: Item stability US1
 
 
 ![Comparison NL2 with bootstrapped NL2](../Output/Supplemental/ega_nl_2_boot_sample.png) 
 \centering
-Figure 8: Comparison NL2 with bootstrapped NL1
+Figure 7: Comparison NL2 with bootstrapped NL1
 
 
 ![Stability NL2](../Output/Supplemental/ega_nl_2_stability.png)
 \centering
-Figure 9: Item stability NL2
+Figure 8: Item stability NL2
 
 ![Comparison EGA NL with bootstrapped EGA NL](../Output/Supplemental/ega_nl_full_boot_sample.png)
 \centering
-Figure 10: Comparison EGA in the full NL sample with bootstrapped results
+Figure 9: Comparison EGA in the full NL sample with bootstrapped results
 
 ![Stability EGA NL](../Output/Supplemental/ega_nl_full_stability.png) 
 \centering
-Figure 11: Item stability in the full NL sample
+Figure 10: Item stability in the full NL sample
 
 ![Comparison EGA NL with bootstrapped EGA US](../Output/Supplemental/ega_us_full_boot_sample.png)
 \centering
-Figure 12: Comparison EGA in the full US sample with bootstrapped results
+Figure 11: Comparison EGA in the full US sample with bootstrapped results
 
 ![Stability EGA US](../Output/Supplemental/ega_us_full_stability.png) 
 \centering
-Figure 13: Item stability in the full US sample
+Figure 12: Item stability in the full US sample
 
