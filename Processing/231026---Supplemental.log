@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.25)  26 OCT 2023 17:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.25)  27 OCT 2023 18:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -565,138 +565,132 @@ File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [1
 
 {c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}] [2]
-Overfull \hbox (2.89651pt too wide) in paragraph at lines 227--227
+Overfull \hbox (2.89651pt too wide) in paragraph at lines 223--223
  []|\T1/lmr/m/n/9 p_income| 
  []
 
 
-Overfull \hbox (1.0981pt too wide) in paragraph at lines 230--230
+Overfull \hbox (1.0981pt too wide) in paragraph at lines 226--226
  []|\T1/lmr/m/n/9 p_wealth| 
  []
 
 
-Overfull \hbox (9.13582pt too wide) in paragraph at lines 238--238
+Overfull \hbox (9.13582pt too wide) in paragraph at lines 234--234
  []|\T1/lmr/m/n/9 b_diversity| 
  []
 
 
-Overfull \hbox (6.75113pt too wide) in paragraph at lines 239--239
+Overfull \hbox (6.75113pt too wide) in paragraph at lines 235--235
  []|\T1/lmr/m/n/9 b_equality| 
  []
 
 
-Overfull \hbox (7.5214pt too wide) in paragraph at lines 241--241
+Overfull \hbox (7.5214pt too wide) in paragraph at lines 237--237
  []|\T1/lmr/m/n/9 ib_weafam| 
  []
 
 
-Overfull \hbox (4.97356pt too wide) in paragraph at lines 244--244
+Overfull \hbox (4.97356pt too wide) in paragraph at lines 240--240
  []|\T1/lmr/m/n/9 ib_edupar| 
  []
 
 
-Overfull \hbox (3.1575pt too wide) in paragraph at lines 247--247
+Overfull \hbox (3.1575pt too wide) in paragraph at lines 243--243
  []|\T1/lmr/m/n/9 ib_people| 
  []
 
 
-Overfull \hbox (3.99619pt too wide) in paragraph at lines 252--252
+Overfull \hbox (3.99619pt too wide) in paragraph at lines 248--248
  []|\T1/lmr/m/n/9 att_redist| 
  []
 
 [3]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 262.
+(Font)              <10> on input line 258.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 262.
+(Font)              <7> on input line 258.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 262.
+(Font)              <5> on input line 258.
 [4] [5] [6] [7]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 736.
+(Font)              <9> on input line 732.
 [8
 
 
 ] [9
 
 ]
-<../Output/Supplemental/EGA_multi_std.png, id=69, 867.24pt x 867.24pt>
-File: ../Output/Supplemental/EGA_multi_std.png Graphic file (type png)
-<use ../Output/Supplemental/EGA_multi_std.png>
-Package pdftex.def Info: ../Output/Supplemental/EGA_multi_std.png  used on input line 1111.
-(pdftex.def)             Requested size: 469.75827pt x 469.75827pt.
-<../Output/Supplemental/ega_us_1_boot_sample.png, id=71, 867.24pt x 867.24pt>
+<../Output/Supplemental/ega_us_1_boot_sample.png, id=69, 867.24pt x 867.24pt>
 File: ../Output/Supplemental/ega_us_1_boot_sample.png Graphic file (type png)
 <use ../Output/Supplemental/ega_us_1_boot_sample.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_us_1_boot_sample.png  used on input line 1114.
+Package pdftex.def Info: ../Output/Supplemental/ega_us_1_boot_sample.png  used on input line 1107.
 (pdftex.def)             Requested size: 469.75827pt x 469.75827pt.
-[10 <../Output/Supplemental/EGA_multi_std.png>]
-<../Output/Supplemental/ega_us_1_stability.png, id=77, 488.5452pt x 301.8477pt>
+<../Output/Supplemental/ega_us_1_stability.png, id=71, 488.5452pt x 301.8477pt>
 File: ../Output/Supplemental/ega_us_1_stability.png Graphic file (type png)
 <use ../Output/Supplemental/ega_us_1_stability.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_us_1_stability.png  used on input line 1117.
+Package pdftex.def Info: ../Output/Supplemental/ega_us_1_stability.png  used on input line 1110.
 (pdftex.def)             Requested size: 469.76588pt x 290.24489pt.
-[11 <../Output/Supplemental/ega_us_1_boot_sample.png>]
-<../Output/Supplemental/ega_us_2_boot_sample.png, id=83, 867.24pt x 867.24pt>
+[10 <../Output/Supplemental/ega_us_1_boot_sample.png>]
+<../Output/Supplemental/ega_us_2_boot_sample.png, id=77, 867.24pt x 867.24pt>
 File: ../Output/Supplemental/ega_us_2_boot_sample.png Graphic file (type png)
 <use ../Output/Supplemental/ega_us_2_boot_sample.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_us_2_boot_sample.png  used on input line 1120.
+Package pdftex.def Info: ../Output/Supplemental/ega_us_2_boot_sample.png  used on input line 1113.
 (pdftex.def)             Requested size: 469.75827pt x 469.75827pt.
-[12 <../Output/Supplemental/ega_us_1_stability.png>]
-<../Output/Supplemental/ega_us_2_stability.png, id=88, 488.5452pt x 301.8477pt>
+[11 <../Output/Supplemental/ega_us_1_stability.png>]
+<../Output/Supplemental/ega_us_2_stability.png, id=82, 488.5452pt x 301.8477pt>
 File: ../Output/Supplemental/ega_us_2_stability.png Graphic file (type png)
 <use ../Output/Supplemental/ega_us_2_stability.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_us_2_stability.png  used on input line 1123.
+Package pdftex.def Info: ../Output/Supplemental/ega_us_2_stability.png  used on input line 1116.
 (pdftex.def)             Requested size: 469.76588pt x 290.24489pt.
-[13 <../Output/Supplemental/ega_us_2_boot_sample.png>]
-<../Output/Supplemental/ega_nl_1_boot_sample.png, id=95, 867.24pt x 867.24pt>
+[12 <../Output/Supplemental/ega_us_2_boot_sample.png>]
+<../Output/Supplemental/ega_nl_1_boot_sample.png, id=88, 867.24pt x 867.24pt>
 File: ../Output/Supplemental/ega_nl_1_boot_sample.png Graphic file (type png)
 <use ../Output/Supplemental/ega_nl_1_boot_sample.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_nl_1_boot_sample.png  used on input line 1126.
+Package pdftex.def Info: ../Output/Supplemental/ega_nl_1_boot_sample.png  used on input line 1119.
 (pdftex.def)             Requested size: 469.75827pt x 469.75827pt.
-[14 <../Output/Supplemental/ega_us_2_stability.png>]
-<../Output/Supplemental/ega_nl_1_stability.png, id=100, 488.5452pt x 301.8477pt>
+[13 <../Output/Supplemental/ega_us_2_stability.png>]
+<../Output/Supplemental/ega_nl_1_stability.png, id=94, 488.5452pt x 301.8477pt>
 File: ../Output/Supplemental/ega_nl_1_stability.png Graphic file (type png)
 <use ../Output/Supplemental/ega_nl_1_stability.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_nl_1_stability.png  used on input line 1129.
+Package pdftex.def Info: ../Output/Supplemental/ega_nl_1_stability.png  used on input line 1122.
 (pdftex.def)             Requested size: 469.76588pt x 290.24489pt.
-[15 <../Output/Supplemental/ega_nl_1_boot_sample.png>]
-<../Output/Supplemental/ega_nl_2_boot_sample.png, id=106, 867.24pt x 867.24pt>
+[14 <../Output/Supplemental/ega_nl_1_boot_sample.png>]
+<../Output/Supplemental/ega_nl_2_boot_sample.png, id=100, 867.24pt x 867.24pt>
 File: ../Output/Supplemental/ega_nl_2_boot_sample.png Graphic file (type png)
 <use ../Output/Supplemental/ega_nl_2_boot_sample.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_nl_2_boot_sample.png  used on input line 1132.
+Package pdftex.def Info: ../Output/Supplemental/ega_nl_2_boot_sample.png  used on input line 1125.
 (pdftex.def)             Requested size: 469.75827pt x 469.75827pt.
-[16 <../Output/Supplemental/ega_nl_1_stability.png>]
-<../Output/Supplemental/ega_nl_2_stability.png, id=111, 488.5452pt x 301.8477pt>
+[15 <../Output/Supplemental/ega_nl_1_stability.png>]
+<../Output/Supplemental/ega_nl_2_stability.png, id=105, 488.5452pt x 301.8477pt>
 File: ../Output/Supplemental/ega_nl_2_stability.png Graphic file (type png)
 <use ../Output/Supplemental/ega_nl_2_stability.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_nl_2_stability.png  used on input line 1135.
+Package pdftex.def Info: ../Output/Supplemental/ega_nl_2_stability.png  used on input line 1128.
 (pdftex.def)             Requested size: 469.76588pt x 290.24489pt.
-[17 <../Output/Supplemental/ega_nl_2_boot_sample.png>]
-<../Output/Supplemental/ega_nl_full_boot_sample.png, id=117, 867.24pt x 867.24pt>
+[16 <../Output/Supplemental/ega_nl_2_boot_sample.png>]
+<../Output/Supplemental/ega_nl_full_boot_sample.png, id=111, 867.24pt x 867.24pt>
 File: ../Output/Supplemental/ega_nl_full_boot_sample.png Graphic file (type png)
 <use ../Output/Supplemental/ega_nl_full_boot_sample.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_nl_full_boot_sample.png  used on input line 1138.
+Package pdftex.def Info: ../Output/Supplemental/ega_nl_full_boot_sample.png  used on input line 1131.
 (pdftex.def)             Requested size: 469.75827pt x 469.75827pt.
-[18 <../Output/Supplemental/ega_nl_2_stability.png>]
-<../Output/Supplemental/ega_nl_full_stability.png, id=122, 488.5452pt x 301.8477pt>
+[17 <../Output/Supplemental/ega_nl_2_stability.png>]
+<../Output/Supplemental/ega_nl_full_stability.png, id=116, 488.5452pt x 301.8477pt>
 File: ../Output/Supplemental/ega_nl_full_stability.png Graphic file (type png)
 <use ../Output/Supplemental/ega_nl_full_stability.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_nl_full_stability.png  used on input line 1142.
+Package pdftex.def Info: ../Output/Supplemental/ega_nl_full_stability.png  used on input line 1135.
 (pdftex.def)             Requested size: 469.76588pt x 290.24489pt.
-[19 <../Output/Supplemental/ega_nl_full_boot_sample.png>]
-<../Output/Supplemental/ega_us_full_boot_sample.png, id=129, 867.24pt x 867.24pt>
+[18 <../Output/Supplemental/ega_nl_full_boot_sample.png>]
+<../Output/Supplemental/ega_us_full_boot_sample.png, id=122, 867.24pt x 867.24pt>
 File: ../Output/Supplemental/ega_us_full_boot_sample.png Graphic file (type png)
 <use ../Output/Supplemental/ega_us_full_boot_sample.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_us_full_boot_sample.png  used on input line 1145.
+Package pdftex.def Info: ../Output/Supplemental/ega_us_full_boot_sample.png  used on input line 1138.
 (pdftex.def)             Requested size: 469.75827pt x 469.75827pt.
-[20 <../Output/Supplemental/ega_nl_full_stability.png>]
-<../Output/Supplemental/ega_us_full_stability.png, id=134, 488.5452pt x 301.8477pt>
+[19 <../Output/Supplemental/ega_nl_full_stability.png>]
+<../Output/Supplemental/ega_us_full_stability.png, id=128, 488.5452pt x 301.8477pt>
 File: ../Output/Supplemental/ega_us_full_stability.png Graphic file (type png)
 <use ../Output/Supplemental/ega_us_full_stability.png>
-Package pdftex.def Info: ../Output/Supplemental/ega_us_full_stability.png  used on input line 1149.
+Package pdftex.def Info: ../Output/Supplemental/ega_us_full_stability.png  used on input line 1142.
 (pdftex.def)             Requested size: 469.76588pt x 290.24489pt.
-[21 <../Output/Supplemental/ega_us_full_boot_sample.png>] [22 <../Output/Supplemental/ega_us_full_stability.png>] (./231026---Supplemental.aux)
+[20 <../Output/Supplemental/ega_us_full_boot_sample.png>] [21 <../Output/Supplemental/ega_us_full_stability.png>] (./231026---Supplemental.aux)
  ***********
 LaTeX2e <2023-06-01> patch level 1
 L3 programming layer <2023-10-23>
@@ -708,18 +702,18 @@ Package rerunfilecheck Info: File `231026---Supplemental.out' has not changed.
 (rerunfilecheck)             Checksum: 3E26EC20BB6DAD81822B98C68535D816;275.
  ) 
 Here is how much of TeX's memory you used:
- 12679 strings out of 476357
- 200555 string characters out of 5797817
+ 12671 strings out of 476357
+ 200220 string characters out of 5797817
  1963036 words of memory out of 5000000
- 34228 multiletter control sequences out of 15000+600000
+ 34221 multiletter control sequences out of 15000+600000
  611589 words of font info for 83 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  75i,12n,79p,384b,516s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr6.pfb><c:/Users/gonza/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr9.pfb>
-Output written on 231026---Supplemental.pdf (22 pages, 9703999 bytes).
+Output written on 231026---Supplemental.pdf (21 pages, 8088397 bytes).
 PDF statistics:
- 189 PDF objects out of 1000 (max. 8388607)
- 128 compressed objects within 2 object streams
- 35 named destinations out of 1000 (max. 500000)
- 82 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 183 PDF objects out of 1000 (max. 8388607)
+ 125 compressed objects within 2 object streams
+ 34 named destinations out of 1000 (max. 500000)
+ 77 words of extra memory for PDF output out of 10000 (max. 10000000)
 
