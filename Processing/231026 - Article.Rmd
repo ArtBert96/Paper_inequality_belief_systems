@@ -857,6 +857,7 @@ save(data_final, data_us, data_us_cca, data_nl, data_nl_cca,
 
 save(cca_us_1, cca_us_2, cca_nl_1, cca_nl_2,
      data_us_net, data_nl_net,
+     ega_us_1, ega_us_2, ega_nl_1, ega_nl_2,
      US_ega, NL_ega,
      file = here("Output",  "databases_stability.RData"))
 ```
