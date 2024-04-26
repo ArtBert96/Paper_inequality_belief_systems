@@ -54,6 +54,9 @@ to study them, and why they matter". We report a list of tables and figures at t
 * **Robustness of EGA:** To detect the robustness of EGA results we adopt parametric bootstrap technique. For each network shown in the article, we reseample with replacement 2000 bootstrapped samples. Then, we re-estimate EGA on each of the 2000 bootstrapped samples. This allow us to compare the results of the EGA fitted on the original sample with the average results of obtained in the bootstrapped samples. Moreover, we are also able to estimate the stability of the community detection algorithm, by examining the extent to which each empirically derived dimension is exactly recovered from the replicate bootstrap samples. In the article we estimated six network structures: one for each CCA cluster (two in US, two in NL) and one for each country. For each of these six network we report two figures. First, we compare the network structures retrieved in the original samples with the average structures obtained by aggregating the results of the bootstrapped samples. Effectively, this results in a figure comparing the original networks shown in the article and the average network obtained in the bootstrapped samples. Moreover, we report a plot showing how often the membership of each variable is replicating across bootstraps. Regarding this plot, item scores greater than 0.70 reflect sufficient stability [(Christensen & Golino, 2021)](https://www.mdpi.com/2624-8611/3/3/32). 
 Results are shown in Figures 1 to Figures 12. Overall, the sample and bootstrapped EGAs are always similar, and community detection results are robust and overcome the bootstrap robustness tests. The only exceptions to these patterns are the nodes e_people, and e_weafam in the US2 network, and the node a_merit in the US1 and US2 networks. These nodes change their community membership across bootstrapped samples. However, the results regarding the number of communities of US1 EGA is highly stable. Indeed, 1946 of the 2000 bootstrapped samples displayed 3 clusters; only 1 bootstrapped sample displayed 2 clusters, and only 53 samples produced 4 communities. Moreover, the edges of the sample and bootstrapped networks do not differ meaningfully. This entails that the instability of this network is due to the community membership of some of its node, and not to its edges. Since our analyses of the four belief system mainly focused on the latter, and utilized nodes' community membership as a descriptive tool, we are not concerned with this kind of instability. Instability at the community membership level would be a concern only for the full sample networks. Indeed, these communities dictated the formation of the indexes for the regressions of Section 4.4. However, these results are remarkably stable (item stability always higher than .74 in NL, and higher than .96 in US). 
 
+* **Descriptives on network centrality:** We compute Strength centrality to describe nodes' importance in the four inequality belief system. This measure is a refined version of Degree centrality suited to the study of weighted networks. For each node, it is calculated by summing the absolute weights of all the edges connected to that node [(Opshal, 2010)](https://www.sciencedirect.com/science/article/pii/S0378873310000183). We report on centrality of the US and NL belief systems in Figure 13 and 14 respectively. 
+
+
 \newpage
 
 # Tables and Figures
@@ -671,3 +674,10 @@ Figure 11: Comparison EGA in the full US sample with bootstrapped results
 \centering
 Figure 12: Item stability in the full US sample
 
+![Centrality in the Nederlands](../Output/Supplemental/cent_nl.jpg) 
+\centering
+Figure 13: Strength centrality for the NL belief systems
+
+![Centrality in the United States](../Output/Supplemental/cent_us.jpg) 
+\centering
+Figure 14: Strength centrality for the US belief systems

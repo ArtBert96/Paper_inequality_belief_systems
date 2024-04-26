@@ -844,6 +844,30 @@ tab_model(list(m0_nl_b, m1_nl_b, m2_nl_b),
 
 ```
 
+## Descriptives on network centrality
+
+### NL
+
+```{r}
+#Centrality
+centralitynl1 = centrality(ega_nl_1$network)
+centralitynl2 = centrality(ega_nl_2$network)
+cent_nl = centralityPlot(GGM = list(NL1 = ega_nl_1$network, NL2 = ega_nl_2$network), standardized = FALSE, orderBy = "Strength")
+ggsave(here("Output", "Supplemental", "cent_nl.jpg"), 
+       cent_nl, height = 6, width = 6)
+```
+### US
+
+```{r}
+#Centrality
+centralityus1 = centrality(ega_us_1$network)
+centralityus2 = centrality(ega_us_2$network)
+cent_us = centralityPlot(GGM = list(US1 = ega_us_1$network, US2 = ega_us_2$network), standardized = FALSE, orderBy = "Strength")
+ggsave(here("Output", "Supplemental", "cent_us.jpg"), 
+       cent_us, height = 6, width = 6)
+```
+
+
 # Output
 
 ## Databases
