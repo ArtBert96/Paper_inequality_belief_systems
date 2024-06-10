@@ -16,6 +16,4 @@ DOI: https://doi.org/10.1007/s11205-024-03352-5
 
 **Keywords:** Social justice · Inequality · Belief system · Social network analysis
 
-**Correspondence:**  
-Arturo Bertero  
-arturo.bertero@unimi.it
+**Correspondence:** Arturo Bertero arturo.bertero@unimi.it
